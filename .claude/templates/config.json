@@ -1,8 +1,8 @@
 {
-	"project_name": "",
-	"command_prefix": "lean",
-	"model_profile": "quality",
-	"auto_verify": true,
-	"auto_commit": true,
-	"stack_defaults_path": "~/.claude/lean-gsd/references/stack-defaults.md"
+  "project_name": "",
+  "command_prefix": "lean",
+  "model_profile": "quality",
+  "auto_verify": true,
+  "auto_commit": true,
+  "stack_defaults_path": "~/.claude/lean-gsd/references/stack-defaults.md"
 }

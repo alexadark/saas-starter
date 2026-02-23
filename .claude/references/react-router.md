@@ -202,6 +202,31 @@ function FavoriteButton({ itemId }: { itemId: string }) {
 }
 ```
 
+### fetcher.submit() for Programmatic POST
+
+When you need to trigger a mutation programmatically (without a form submit event):
+
+```tsx
+import { useFetcher } from "react-router";
+
+function DeleteButton({ itemId }: { itemId: string }) {
+  const fetcher = useFetcher();
+
+  const handleDelete = () => {
+    fetcher.submit(
+      { id: itemId },
+      { method: "post", action: "/api/items/delete" },
+    );
+  };
+
+  return (
+    <button onClick={handleDelete} disabled={fetcher.state !== "idle"}>
+      {fetcher.state !== "idle" ? "Deleting..." : "Delete"}
+    </button>
+  );
+}
+```
+
 ---
 
 ## Pending UI States
@@ -451,15 +476,16 @@ export function init() {
 
 ## Quick Reference
 
-| Anti-Pattern                  | Use Instead                     |
-| ----------------------------- | ------------------------------- |
-| `useEffect` for data fetching | `loader` function               |
-| `useState` + `fetch`          | `loader` + `loaderData`         |
-| Manual form handling          | `<Form>` + `action`             |
-| API routes for internal data  | Loaders and actions             |
-| Client-side redirects         | `redirect()` from loader/action |
-| Custom loading states         | `useNavigation().state`         |
-| Manual error states           | `ErrorBoundary`                 |
+| Anti-Pattern                                         | Use Instead                     |
+| ---------------------------------------------------- | ------------------------------- |
+| `useEffect` for data fetching                        | `loader` function               |
+| `useState` + `fetch`                                 | `loader` + `loaderData`         |
+| Manual form handling                                 | `<Form>` + `action`             |
+| API routes for internal data                         | Loaders and actions             |
+| Client-side redirects                                | `redirect()` from loader/action |
+| Custom loading states                                | `useNavigation().state`         |
+| Manual error states                                  | `ErrorBoundary`                 |
+| `document.createElement("form")` + `requestSubmit()` | `fetcher.submit()`              |
 
 ---
 

@@ -59,6 +59,33 @@ These are dynamically injected based on context and MUST be obeyed.
 - Scope convention: `"global"`, `"org:{id}"`, `"user:{id}"`
 - All values validated with Zod at runtime — no raw JSON escapes
 
+### Event Bus (`app/lib/server/events.ts`)
+
+- `emit("event.name", payload)` — fire-and-forget event emission
+- `on("event.name", handler)` — register typed handler, returns unsubscribe fn
+- Augment `AppEvents` interface to declare your events
+- Handlers run via queueMicrotask — never block the response
+
+### Logger (`app/lib/server/logger.ts`)
+
+- `logger.info(msg, context?)`, `.debug()`, `.warn()`, `.error(msg, err?, ctx?)`
+- Structured JSON in production, pretty-print in development
+- `logger.error()` returns an `errorId` (UUID) — show to users for support
+- Respects `LOG_LEVEL` env var (default: "info")
+
+### Form Validation (`app/lib/server/form.ts`)
+
+- `parseFormData(request, zodSchema)` — parse + validate in one call
+- Returns `{ success, data }` or `{ success, errors }` (field-level)
+- Error shape works directly with React Router action returns
+
+### Rate Limiter (`app/lib/server/rate-limit.ts`)
+
+- `createRateLimiter({ windowMs, max })` — creates a limiter function
+- `limiter(request)` → `{ allowed, remaining, resetAt }`
+- `getRateLimitHeaders(result)` — standard rate limit headers
+- In-memory sliding window — resets on deploy (fine at starter scale)
+
 ## Testing Conventions
 
 - **Every component gets three files**: `{name}.tsx` + `{name}.stories.tsx` + `{name}.test.tsx`
@@ -76,7 +103,7 @@ app/
   components/      UI components organized by feature
   lib/
     db/              Drizzle ORM client + schema
-    server/          Server utilities (features, config)
+    server/          Server utilities (features, config, events, logger, form, rate-limit)
     supabase/        Supabase clients
   routes/          Route modules
     auth/          Authentication pages

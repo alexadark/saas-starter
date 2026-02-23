@@ -1,5 +1,14 @@
 # Project: [PROJECT NAME]
 
+<!-- CARL-MANAGED: Do not remove this section -->
+
+## CARL Integration
+
+Follow all rules in <carl-rules> blocks from system-reminders.
+These are dynamically injected based on context and MUST be obeyed.
+
+<!-- END CARL-MANAGED -->
+
 ## Overview
 
 [Brief description of the project]
@@ -10,6 +19,7 @@
 - **Language**: TypeScript (strict)
 - **Styling**: Tailwind CSS 4 + shadcn/ui (Radix + CVA)
 - **Auth**: Supabase (email/password, OAuth-ready)
+- **Database**: Drizzle ORM + postgres.js (schema in `app/lib/db/schema.ts`, connects to Supabase Postgres)
 - **Testing**: Vitest + Testing Library + MSW + Playwright
 - **Stories**: Storybook 10 (vitest addon + a11y addon)
 - **Linting**: Biome (tabs, double quotes, semicolons)
@@ -73,22 +83,25 @@ npm run test         # Vitest
 npm run storybook    # Storybook on :6006
 npm run lint         # Biome check
 npm run typecheck    # TypeScript check
+npm run db:generate  # Generate migrations from schema
+npm run db:push      # Push schema directly (no migration files)
+npm run db:studio    # Open Drizzle Studio
 ```
 
 ## Workflow
 
 This project uses **Lean GSD** — a streamlined framework with 8 commands and 4 agents.
 
-| Command | Purpose |
-|---------|---------|
-| `/start` | Initialize project: questioning → research → product design → roadmap |
-| `/plan` | Plan next phase: optional research → planner agent → PLAN.md files |
-| `/build` | Execute phase: wave-based parallel subagents with atomic commits |
-| `/quick` | Ad-hoc task: plan + execute in one step |
-| `/verify` | Goal-backward verification of built work |
-| `/debug` | Scientific debugging with persistent state |
-| `/status` | Progress display + next action suggestion |
-| `/resume` | Restore context from previous session |
+| Command   | Purpose                                                               |
+| --------- | --------------------------------------------------------------------- |
+| `/start`  | Initialize project: questioning → research → product design → roadmap |
+| `/plan`   | Plan next phase: optional research → planner agent → PLAN.md files    |
+| `/build`  | Execute phase: wave-based parallel subagents with atomic commits      |
+| `/quick`  | Ad-hoc task: plan + execute in one step                               |
+| `/verify` | Goal-backward verification of built work                              |
+| `/debug`  | Scientific debugging with persistent state                            |
+| `/status` | Progress display + next action suggestion                             |
+| `/resume` | Restore context from previous session                                 |
 
 ## Customization Checklist
 

@@ -5,6 +5,7 @@
 ## Overview
 
 React Router 7 Framework Mode provides:
+
 - **Server-side rendering (SSR)** with Vite for fast builds
 - **Type-safe routing** with auto-generated route types
 - **Loaders and Actions** for data fetching and mutations
@@ -41,16 +42,16 @@ app/
 
 ### Routing Conventions
 
-| File | URL | Description |
-|------|-----|-------------|
-| `_index.tsx` | `/` | Index route |
-| `about.tsx` | `/about` | Static segment |
-| `products.$id.tsx` | `/products/:id` | Dynamic segment |
-| `_protected.tsx` | (none) | Pathless layout (auth check) |
-| `_protected.dashboard.tsx` | `/dashboard` | Child of pathless layout |
-| `api.webhooks.stripe.tsx` | `/api/webhooks/stripe` | Resource route (no UI) |
-| `sitemap[.]xml.tsx` | `/sitemap.xml` | Escaped dot |
-| `$.tsx` | `*` | 404 catch-all |
+| File                       | URL                    | Description                  |
+| -------------------------- | ---------------------- | ---------------------------- |
+| `_index.tsx`               | `/`                    | Index route                  |
+| `about.tsx`                | `/about`               | Static segment               |
+| `products.$id.tsx`         | `/products/:id`        | Dynamic segment              |
+| `_protected.tsx`           | (none)                 | Pathless layout (auth check) |
+| `_protected.dashboard.tsx` | `/dashboard`           | Child of pathless layout     |
+| `api.webhooks.stripe.tsx`  | `/api/webhooks/stripe` | Resource route (no UI)       |
+| `sitemap[.]xml.tsx`        | `/sitemap.xml`         | Escaped dot                  |
+| `$.tsx`                    | `*`                    | 404 catch-all                |
 
 ---
 
@@ -96,7 +97,10 @@ export function ErrorBoundary() {
 }
 
 // UI Component
-export default function MyRoute({ loaderData, actionData }: Route.ComponentProps) {
+export default function MyRoute({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   return <div>{loaderData.data}</div>;
 }
 ```
@@ -128,12 +132,15 @@ export default function Campaigns({ loaderData }: Route.ComponentProps) {
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState([]);
   useEffect(() => {
-    fetch('/api/campaigns').then(r => r.json()).then(setCampaigns);
+    fetch("/api/campaigns")
+      .then((r) => r.json())
+      .then(setCampaigns);
   }, []);
 }
 ```
 
 **Why loaders?**
+
 - Run on server, reduce client bundle
 - Data available immediately (no loading spinners)
 - Better SEO - server-rendered content
@@ -156,7 +163,10 @@ export async function action({ request }: Route.ActionArgs) {
   const name = formData.get("name") as string;
 
   if (!name || name.length < 3) {
-    return data({ error: "Name must be at least 3 characters" }, { status: 400 });
+    return data(
+      { error: "Name must be at least 3 characters" },
+      { status: 400 },
+    );
   }
 
   await db.insert(campaigns).values({ name });
@@ -207,9 +217,7 @@ function CampaignForm() {
     <Form method="post">
       <fieldset disabled={isSubmitting}>
         <input name="name" />
-        <button type="submit">
-          {isSubmitting ? "Creating..." : "Create"}
-        </button>
+        <button type="submit">{isSubmitting ? "Creating..." : "Create"}</button>
       </fieldset>
     </Form>
   );
@@ -256,7 +264,9 @@ export function ErrorBoundary() {
   if (isRouteErrorResponse(error)) {
     return (
       <div className="p-4">
-        <h1>{error.status} {error.statusText}</h1>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
         <p>{error.data}</p>
         <Link to="/">Go home</Link>
       </div>
@@ -274,7 +284,7 @@ import { data } from "react-router";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const item = await db.query.items.findFirst({
-    where: eq(items.id, params.id)
+    where: eq(items.id, params.id),
   });
 
   if (!item) {
@@ -300,7 +310,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return defer({
     user,
-    stats: fetchStats(user.id),      // Non-critical - stream
+    stats: fetchStats(user.id), // Non-critical - stream
     activity: fetchActivity(user.id), // Non-critical - stream
   });
 }
@@ -441,15 +451,15 @@ export function init() {
 
 ## Quick Reference
 
-| Anti-Pattern | Use Instead |
-|--------------|-------------|
-| `useEffect` for data fetching | `loader` function |
-| `useState` + `fetch` | `loader` + `loaderData` |
-| Manual form handling | `<Form>` + `action` |
-| API routes for internal data | Loaders and actions |
-| Client-side redirects | `redirect()` from loader/action |
-| Custom loading states | `useNavigation().state` |
-| Manual error states | `ErrorBoundary` |
+| Anti-Pattern                  | Use Instead                     |
+| ----------------------------- | ------------------------------- |
+| `useEffect` for data fetching | `loader` function               |
+| `useState` + `fetch`          | `loader` + `loaderData`         |
+| Manual form handling          | `<Form>` + `action`             |
+| API routes for internal data  | Loaders and actions             |
+| Client-side redirects         | `redirect()` from loader/action |
+| Custom loading states         | `useNavigation().state`         |
+| Manual error states           | `ErrorBoundary`                 |
 
 ---
 
@@ -504,8 +514,8 @@ import { Image } from "@unpic/react";
   alt="Hero image"
   width={800}
   height={600}
-  priority={false}  // Set true for above-the-fold images
-/>
+  priority={false} // Set true for above-the-fold images
+/>;
 ```
 
 **Supported CDNs:** Cloudinary, Imgix, Bunny CDN, Cloudflare Images, Vercel, Supabase Storage, and more.
@@ -537,7 +547,7 @@ import heroFallback from "./hero.jpg?w=800";
   <source srcSet={heroAvif} type="image/avif" />
   <source srcSet={heroWebp} type="image/webp" />
   <img src={heroFallback} alt="Hero" loading="lazy" />
-</picture>
+</picture>;
 ```
 
 ### Option 4: Supabase Storage Transformations
@@ -546,23 +556,24 @@ If using Supabase Storage, leverage built-in transformations:
 
 ```tsx
 // Original URL
-const originalUrl = "https://xxx.supabase.co/storage/v1/object/public/images/photo.jpg";
+const originalUrl =
+  "https://xxx.supabase.co/storage/v1/object/public/images/photo.jpg";
 
 // With transformations
 const optimizedUrl = `${originalUrl}?width=800&height=600&resize=cover&format=webp`;
 
-<img src={optimizedUrl} alt="Photo" loading="lazy" />
+<img src={optimizedUrl} alt="Photo" loading="lazy" />;
 ```
 
 ### Best Practices
 
-| Scenario | Recommendation |
-|----------|----------------|
+| Scenario              | Recommendation                                  |
+| --------------------- | ----------------------------------------------- |
 | Above-the-fold images | No `loading="lazy"`, add `fetchpriority="high"` |
-| Below-the-fold images | Use `loading="lazy"` and `decoding="async"` |
-| Hero/banner images | Use `<picture>` with AVIF/WebP fallbacks |
-| User-uploaded content | Use Supabase transformations or CDN |
-| Static assets | Use vite-imagetools for build-time optimization |
+| Below-the-fold images | Use `loading="lazy"` and `decoding="async"`     |
+| Hero/banner images    | Use `<picture>` with AVIF/WebP fallbacks        |
+| User-uploaded content | Use Supabase transformations or CDN             |
+| Static assets         | Use vite-imagetools for build-time optimization |
 
 ### Migration from next/image
 

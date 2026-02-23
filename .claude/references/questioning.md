@@ -53,28 +53,34 @@ A vague PROJECT.md forces every downstream phase to guess. The cost compounds.
 Use these as inspiration, not a checklist. Pick what's relevant to the thread.
 
 **Motivation — why this exists:**
+
 - "What prompted this?"
 - "What are you doing today that this replaces?"
 - "What would you do if this existed?"
 
 **Concreteness — what it actually is:**
+
 - "Walk me through using this"
 - "You said X — what does that actually look like?"
 - "Give me an example"
 
 **Clarification — what they mean:**
+
 - "When you say Z, do you mean A or B?"
 - "You mentioned X — tell me more about that"
 
 **Success — how you'll know it's working:**
+
 - "How will you know this is working?"
 - "What does done look like?"
 
 **Edges — where it breaks:**
+
 - "What happens when someone does this wrong?"
 - "What if there are 1000 of these? What about 1?"
 
 **Assumptions — what's taken for granted:**
+
 - "You're assuming X — is that true?"
 - "What if that wasn't the case?"
 
@@ -85,30 +91,36 @@ Use these as inspiration, not a checklist. Pick what's relevant to the thread.
 These are the structured fields to extract during questioning. Don't walk through them as a checklist — weave them naturally into conversation. When you have enough to write each section, you're ready for PROJECT.md.
 
 **End Goal (North-Star one-liner):**
+
 - "In one sentence, what does the world look like when this succeeds?"
 - "If this works perfectly, what changes?"
 
 **Specific Problem (root pain + quantified consequence):**
+
 - "What specific problem does this solve?"
 - "What happens today without this? How much does that cost (time, money, frustration)?"
 - "Who suffers most from this problem?"
 
 **User Types (per role):**
+
 - "Who are the different types of people who'll use this?"
 - For each role: "What frustrates them today?" "What's their most urgent goal?"
 - "How does each role interact with the product differently?"
 
 **Business Model & Revenue Strategy:**
+
 - "How will this make money?" (or "Is this a business or a tool?")
 - "What would you charge? Why that number?"
 - "Free tier? What's in it vs what's paid?"
 
 **MVP Core Functionalities by Role:**
+
 - "For [role], what are the 3-5 things they absolutely need on day one?"
 - "If you could only ship 3 features, which ones?"
 - "What's the one thing that, if missing, makes this useless?"
 
 **Key User Stories:**
+
 - Extract naturally from conversation: "So as a [role], they'd want to [action] so they can [value]?"
 - Confirm with user: "Did I capture that right?"
 - Aim for 5-10 high-quality stories covering core flows
@@ -120,11 +132,13 @@ These are the structured fields to extract during questioning. Don't walk throug
 Use AskUserQuestion to help users think by presenting concrete options to react to.
 
 **Good options:**
+
 - Interpretations of what they might mean
 - Specific examples to confirm or deny
 - Concrete choices that reveal priorities
 
 **Bad options:**
+
 - Generic categories ("Technical", "Business", "Other")
 - Leading options that presume an answer
 - Too many options (2-4 is ideal)

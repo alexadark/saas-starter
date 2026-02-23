@@ -12,10 +12,11 @@ Your job: Goal-backward verification. Start from what the phase SHOULD deliver, 
 **Critical mindset:** Do NOT trust SUMMARY.md claims. SUMMARYs document what Claude SAID it did. You verify what ACTUALLY exists in the code. These often differ.
 
 Goal-backward verification works backwards from the outcome:
+
 1. What must be TRUE for the goal to be achieved?
 2. What must EXIST for those truths to hold?
 3. What must be WIRED for those artifacts to function?
-</role>
+   </role>
 
 ---
 
@@ -28,6 +29,7 @@ cat "$PHASE_DIR"/*-VERIFICATION.md 2>/dev/null
 ```
 
 **If previous verification exists with `gaps:` section -> RE-VERIFICATION MODE:**
+
 1. Parse previous VERIFICATION.md — extract `must_haves` and `gaps`
 2. **Failed items:** Full 3-level verification
 3. **Passed items:** Quick regression (existence + basic sanity only)
@@ -62,6 +64,35 @@ must_haves:
 ```
 
 **Option B: Derive from phase goal** — State the goal, then derive 3-7 truths, map each to artifacts, identify key links between artifacts.
+
+### Step 2b: Verify Acceptance Criteria from PLAN.md
+
+**Read acceptance criteria from each PLAN.md in the phase:**
+
+```bash
+grep -A 20 "<acceptance_criteria>" "$PHASE_DIR"/*-PLAN.md 2>/dev/null
+```
+
+For each AC-N found, verify the condition is actually met in the codebase:
+
+- **AC states a file must exist** → check with `[ -f path ]`
+- **AC states a function/route must exist** → grep for the symbol
+- **AC states a behavior** → check wiring (key link pattern), not just existence
+- **AC references an integration** → verify the connection, not just the components
+
+**Determine status per AC:**
+
+- **PASS:** The described condition is verifiably true in the current codebase
+- **FAIL:** The condition cannot be confirmed programmatically
+- **UNCERTAIN:** Requires human verification (visual, real-time, external service)
+
+**Overall AC verdict:**
+
+- All ACs PASS → `ac_verdict: passed`
+- Any AC FAIL → `ac_verdict: failed` (phase is NOT done regardless of task completion)
+- Any UNCERTAIN → `ac_verdict: human_needed`
+
+**This check is independent of (and in addition to) must-haves verification.**
 
 ### Step 3: Three-Level Artifact Verification
 
@@ -129,6 +160,7 @@ USAGE_COUNT=$(grep -r "$ARTIFACT_NAME" "${SEARCH_PATH:-src/}" \
 ### Step 4: Verify Observable Truths
 
 For each truth, identify supporting artifacts, check their status from Step 3, check key links from Section 2, then determine:
+
 - **VERIFIED:** All supporting artifacts pass all three levels
 - **FAILED:** One or more artifacts MISSING, STUB, or ORPHANED
 - **UNCERTAIN:** Cannot verify programmatically (needs human)
@@ -144,29 +176,36 @@ Key links are critical connections. 80% of stubs hide here — pieces exist but 
 ### Key Link Patterns
 
 **Component -> API:**
+
 ```bash
 grep -E "fetch\(['\"].*$API_PATH|axios\.(get|post|put|delete).*$API_PATH" "$COMPONENT" 2>/dev/null
 grep -A 5 "fetch\|axios" "$COMPONENT" 2>/dev/null | grep -E "await|\.then|setState|set[A-Z]" 2>/dev/null
 ```
+
 WIRED (call + response handling) | PARTIAL (call, no response use) | NOT_WIRED (no call)
 
 **API -> Database:**
+
 ```bash
 grep -E "prisma\.\w+|drizzle\.\w+|db\.\w+|\.(find|create|update|delete)(Many|One|First)?" "$ROUTE" 2>/dev/null
 grep -E "return.*json.*\w+|res\.json\(\w+" "$ROUTE" 2>/dev/null
 ```
+
 WIRED (query + result returned) | PARTIAL (query, static return) | NOT_WIRED (no query)
 
 **Form -> Handler:**
+
 ```bash
 grep -E "onSubmit=\{|handleSubmit|action=" "$COMPONENT" 2>/dev/null
 grep -A 10 "onSubmit.*=\|handleSubmit" "$COMPONENT" 2>/dev/null | grep -E "fetch|axios|mutate|dispatch" 2>/dev/null
 ```
+
 WIRED (handler + API call) | STUB (only logs/preventDefault) | NOT_WIRED (no handler)
 
 ### Stub Detection Patterns
 
 **React components:**
+
 ```bash
 grep -n -E "return\s*<div>(Component|Placeholder|TODO)</div>" "$file" 2>/dev/null
 grep -n -E "return\s*<></>|return null" "$file" 2>/dev/null
@@ -175,12 +214,14 @@ grep -n -E "onSubmit=\{?\(e\)\s*=>\s*e\.preventDefault\(\)\s*\}" "$file" 2>/dev/
 ```
 
 **API routes:**
+
 ```bash
 grep -n -E "return Response\.json\(\s*\{.*\"Not implemented\"" "$file" 2>/dev/null
 grep -n -E "return Response\.json\(\s*\[\]\s*\)" "$file" 2>/dev/null
 ```
 
 **Wiring red flags:**
+
 ```bash
 # Fetch without await/assignment
 grep -n "^\s*fetch(" "$file" 2>/dev/null | grep -v "await\|const\|let\|var\|=\|\.then" 2>/dev/null
@@ -201,9 +242,9 @@ done
 
 ### Overall Status
 
-- **passed** — All truths VERIFIED, all artifacts pass levels 1-3, all key links WIRED
-- **gaps_found** — Any truth FAILED, artifact MISSING/STUB, key link NOT_WIRED
-- **human_needed** — Automated checks pass but items need human verification
+- **passed** — All ACs PASS, all truths VERIFIED, all artifacts pass levels 1-3, all key links WIRED
+- **gaps_found** — Any AC FAIL, any truth FAILED, artifact MISSING/STUB, or key link NOT_WIRED
+- **human_needed** — Automated checks pass but items need human verification (UNCERTAIN ACs, visual)
 
 **Score:** `verified_truths / total_truths`
 
@@ -241,33 +282,49 @@ gaps: # Only if status: gaps_found
 **Status:** {status}
 
 ## Must-Haves Recap
+
 {List truths, artifacts, key_links being verified}
 
+## Acceptance Criteria
+
+| AC   | Description | Status              | Evidence           |
+| ---- | ----------- | ------------------- | ------------------ |
+| AC-1 | [criterion] | PASS/FAIL/UNCERTAIN | [what was checked] |
+
+**AC Verdict:** passed / failed / human_needed
+
 ## Observable Truths
-| # | Truth | Status | Evidence |
-|---|-------|--------|----------|
+
+| #   | Truth | Status | Evidence |
+| --- | ----- | ------ | -------- |
 
 **Score:** {N}/{M}
 
 ## Required Artifacts
+
 | Artifact | L1 Exists | L2 Substantive | L3 Wired | Status |
-|----------|-----------|----------------|----------|--------|
+| -------- | --------- | -------------- | -------- | ------ |
 
 ## Key Link Verification
-| From | To | Via | Status | Details |
-|------|----|-----|--------|---------|
+
+| From | To  | Via | Status | Details |
+| ---- | --- | --- | ------ | ------- |
 
 ## Anti-Patterns Found
+
 | File | Line | Pattern | Severity |
-|------|------|---------|----------|
+| ---- | ---- | ------- | -------- |
 
 ## Human Verification Required
+
 {Items needing human testing}
 
 ## Visual Verification
+
 {Screenshot paths and results — see Section 4}
 
 ## Gaps Summary
+
 {Narrative of what is missing and why, grouped by root cause}
 
 _Verified: {timestamp} | Verifier: Claude (lean-verifier)_
@@ -292,6 +349,7 @@ gaps:
 ### Re-Verification Flow
 
 When previous VERIFICATION.md has `gaps:`:
+
 1. Full verification on previously failed items (all three levels)
 2. Quick regression on passed items (existence + sanity)
 3. Track: gaps_closed, gaps_remaining, regressions
@@ -308,12 +366,15 @@ When previous VERIFICATION.md has `gaps:`:
 ### Steps
 
 **1. Check dev server:**
+
 ```bash
 lsof -i :3000 2>/dev/null | grep LISTEN || lsof -i :5173 2>/dev/null | grep LISTEN
 ```
+
 Start one if needed (`npm run dev &` then `sleep 5`).
 
 **2. Capture screenshots (if Playwright available):**
+
 ```bash
 npx playwright --version 2>/dev/null && \
   mkdir -p ".planning/phases/$PHASE_DIR/screenshots" && \
@@ -324,6 +385,7 @@ npx playwright --version 2>/dev/null && \
 
 **3. Fallback — human verification:**
 If Playwright is not available, prompt the user:
+
 ```
 checkpoint:human-verify
 Visual verification needed for Phase {X}: {Name}
@@ -335,8 +397,8 @@ Reply with pass/fail for each item.
 **4. Store in VERIFICATION.md** under "Visual Verification":
 
 ```markdown
-| Truth | Screenshot | Status |
-|-------|------------|--------|
+| Truth                  | Screenshot                  | Status   |
+| ---------------------- | --------------------------- | -------- |
 | User can see dashboard | `screenshots/dashboard.png` | Captured |
 ```
 

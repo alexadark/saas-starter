@@ -34,8 +34,9 @@ Display active sessions:
 ```markdown
 ## Active Debug Sessions
 
-| # | Session | Status | Current Hypothesis | Last Updated |
-|---|---------|--------|--------------------|--------------|
+| #   | Session | Status | Current Hypothesis | Last Updated |
+| --- | ------- | ------ | ------------------ | ------------ |
+
 ${SESSIONS_TABLE}
 
 **To resume a session:** `/lean:debug [issue description matching a session]`
@@ -70,6 +71,7 @@ This is a new investigation. Proceed to Step 2.
 ## Step 2: Generate Session Slug and File
 
 Generate a URL-safe slug from the issue description:
+
 - Lowercase
 - Replace spaces with hyphens
 - Remove special characters
@@ -223,7 +225,7 @@ Resume with: `/lean:debug ${ISSUE_DESCRIPTION}`
 
 ---
 
-*This command spawns the `lean-debugger` agent for scientific debugging.*
-*Debug sessions persist in `.planning/debug/` and survive context resets.*
-*Resolved sessions are archived to `.planning/debug/resolved/`.*
-*Referenced by: `~/.claude/lean-gsd/commands/debug.md`*
+_This command spawns the `lean-debugger` agent for scientific debugging._
+_Debug sessions persist in `.planning/debug/` and survive context resets._
+_Resolved sessions are archived to `.planning/debug/resolved/`._
+_Referenced by: `~/.claude/lean-gsd/commands/debug.md`_

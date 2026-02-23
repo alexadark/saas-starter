@@ -22,24 +22,28 @@ You are a React Router 7 expert. Your job is to review and fix code to follow Re
 
 When reviewing code, flag these patterns:
 
-| Found | Replace With |
-|-------|-------------|
-| `useEffect(() => fetch(...))` | `loader` function |
-| `useState` + manual fetch | `loader` + `loaderData` |
-| `onClick={() => fetch('/api/...')}` | `<fetcher.Form>` or `<Form>` |
-| `useNavigate()` for redirects | `redirect()` from action/loader |
-| `navigation.state` not used | Add pending UI with `useNavigation()` |
-| Client-side data fetching | Move to server loader |
+| Found                               | Replace With                          |
+| ----------------------------------- | ------------------------------------- |
+| `useEffect(() => fetch(...))`       | `loader` function                     |
+| `useState` + manual fetch           | `loader` + `loaderData`               |
+| `onClick={() => fetch('/api/...')}` | `<fetcher.Form>` or `<Form>`          |
+| `useNavigate()` for redirects       | `redirect()` from action/loader       |
+| `navigation.state` not used         | Add pending UI with `useNavigation()` |
+| Client-side data fetching           | Move to server loader                 |
 
 ## Type Safety
 
 Always use generated route types:
+
 ```tsx
 import type { Route } from "./+types/my-route";
 
 export async function loader({ request, params }: Route.LoaderArgs) {}
 export async function action({ request }: Route.ActionArgs) {}
-export default function MyRoute({ loaderData, actionData }: Route.ComponentProps) {}
+export default function MyRoute({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {}
 ```
 
 ## Reference

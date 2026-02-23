@@ -6,19 +6,20 @@
 
 ## Current Position
 
-| Field | Value |
-|-------|-------|
-| Phase | {{CURRENT_PHASE_NUMBER}} — {{CURRENT_PHASE_NAME}} |
-| Plan | {{CURRENT_PLAN}} |
-| Wave | {{CURRENT_WAVE}} |
-| Status | {{STATUS}} |
+| Field  | Value                                             |
+| ------ | ------------------------------------------------- |
+| Phase  | {{CURRENT_PHASE_NUMBER}} — {{CURRENT_PHASE_NAME}} |
+| Plan   | {{CURRENT_PLAN}}                                  |
+| Wave   | {{CURRENT_WAVE}}                                  |
+| Status | {{STATUS}}                                        |
 
 ---
 
 ## Decisions Made
 
-| # | Decision | Rationale | Phase |
-|---|----------|-----------|-------|
+| #   | Decision | Rationale | Phase |
+| --- | -------- | --------- | ----- |
+
 {{#EACH DECISION}}
 | {{NUMBER}} | {{DECISION}} | {{RATIONALE}} | {{PHASE}} |
 {{/EACH}}
@@ -28,9 +29,11 @@
 ## Blockers
 
 ### Current
+
 {{CURRENT_BLOCKERS}}
 
 ### Resolved
+
 {{#EACH RESOLVED_BLOCKER}}
 | Blocker | Resolution | Date |
 |---------|------------|------|
@@ -41,8 +44,9 @@
 
 ## Quick Tasks Completed
 
-| # | Task | Result | Date |
-|---|------|--------|------|
+| #   | Task | Result | Date |
+| --- | ---- | ------ | ---- |
+
 {{#EACH QUICK_TASK}}
 | {{NUMBER}} | {{TASK}} | {{RESULT}} | {{DATE}} |
 {{/EACH}}
@@ -59,4 +63,4 @@ Latest session: {{LATEST_SESSION_FILE}}
 
 ---
 
-*Updated by `/lean:build`, `/lean:quick`, `/lean:plan`*
+_Updated by `/lean:build`, `/lean:quick`, `/lean:plan`_

@@ -37,10 +37,18 @@ must_haves:
 {{CONTEXT_SECTION}}
 
 > **Context rules:**
+>
 > - Only include files this plan's tasks will actually read or modify
 > - Use `@path/to/file` syntax for file references
 > - Include prior SUMMARY.md files only if this plan depends on their output
 > - Keep context minimal — each file added costs token budget
+
+---
+
+<acceptance_criteria>
+AC-1: Given [precondition], when [action], then [expected result]
+AC-2: Given [precondition], when [action], then [expected result]
+</acceptance_criteria>
 
 ---
 
@@ -55,7 +63,7 @@ must_haves:
   <verify>
     {{TASK_VERIFY}}
   </verify>
-  <done>{{TASK_DONE_CRITERIA}}</done>
+  <done>AC-N: {{TASK_DONE_CRITERIA}}</done>
 </task>
 
 <task type="checkpoint:human-verify">
@@ -96,20 +104,32 @@ must_haves:
 
 ---
 
+<boundaries>
+## DO NOT CHANGE
+- [files/modules that must not be modified]
+
+## SCOPE LIMITS
+
+- [what is explicitly out of scope for this plan]
+  </boundaries>
+
+---
+
 ## Task Type Reference
 
-| Type | Frequency | When to Use |
-|------|-----------|-------------|
-| `auto` | 99% | Standard automated task — executor handles independently |
-| `checkpoint:human-verify` | ~90% of checkpoints | User must visually verify or approve output |
-| `checkpoint:decision` | ~9% of checkpoints | User must choose between options |
-| `checkpoint:human-action` | ~1% of checkpoints | User must perform an external action (e.g., create API key) |
+| Type                      | Frequency           | When to Use                                                 |
+| ------------------------- | ------------------- | ----------------------------------------------------------- |
+| `auto`                    | 99%                 | Standard automated task — executor handles independently    |
+| `checkpoint:human-verify` | ~90% of checkpoints | User must visually verify or approve output                 |
+| `checkpoint:decision`     | ~9% of checkpoints  | User must choose between options                            |
+| `checkpoint:human-action` | ~1% of checkpoints  | User must perform an external action (e.g., create API key) |
 
 ---
 
 ## Task XML Format Reference
 
 Each task MUST have these 4 fields:
+
 - `<files>` — Which files this task creates or modifies
 - `<action>` — Step-by-step instructions for the executor
 - `<verify>` — How to confirm the task succeeded (test, build, grep, etc.)
@@ -117,6 +137,6 @@ Each task MUST have these 4 fields:
 
 ---
 
-*Template: `~/.claude/lean-gsd/templates/plan.md`*
-*Created by: `lean-planner` agent*
-*Executed by: `lean-executor` agent*
+_Template: `~/.claude/lean-gsd/templates/plan.md`_
+_Created by: `lean-planner` agent_
+_Executed by: `lean-executor` agent_

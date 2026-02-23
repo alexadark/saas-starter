@@ -26,13 +26,14 @@
 ## User Types
 
 {{#EACH USER_TYPE}}
+
 ### {{ROLE_NAME}}
 
 - **Who:** {{WHO_DESCRIPTION}}
 - **Current Frustrations:** {{FRUSTRATIONS}}
 - **Urgent Goals:** {{URGENT_GOALS}}
 - **How They'll Use This:** {{USAGE_PATTERN}}
-{{/EACH}}
+  {{/EACH}}
 
 ---
 
@@ -52,7 +53,9 @@
 ### By Role
 
 {{#EACH USER_TYPE}}
+
 #### {{ROLE_NAME}}
+
 {{CORE_FUNCTIONALITIES}}
 {{/EACH}}
 
@@ -61,8 +64,9 @@
 ## Key User Stories
 
 {{#EACH USER_STORY}}
+
 - As a **{{ROLE}}**, I want **{{ACTION}}**, so that **{{VALUE}}**.
-{{/EACH}}
+  {{/EACH}}
 
 ---
 
@@ -80,4 +84,4 @@
 
 ---
 
-*Created by `/lean:start`*
+_Created by `/lean:start`_

@@ -36,11 +36,13 @@
 **Priority:** essential | consider | skip
 
 #### Features
-| Feature | Layer | Priority | Notes |
-|---------|-------|----------|-------|
+
+| Feature     | Layer                               | Priority                    | Notes     |
+| ----------- | ----------------------------------- | --------------------------- | --------- |
 | {{FEATURE}} | Frontend / Backend / Background Job | essential / consider / skip | {{NOTES}} |
 
 #### Key Interactions
+
 - {{INTERACTION_DESCRIPTION}}
 ```
 
@@ -52,6 +54,7 @@
    - "Public vs authenticated page boundary?"
 
 ### Validation Questions
+
 - Does every user story from PROJECT.md map to at least one page?
 - Does every core functionality from PROJECT.md appear in at least one page's feature list?
 - Are there pages with no essential features? (candidate for removal)
@@ -77,15 +80,18 @@
 **Owned by:** {{USER_ROLE}} (or system)
 
 #### Fields
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| id | uuid/cuid | yes | Primary key |
-| {{FIELD}} | {{TYPE}} | yes/no | {{NOTES}} |
+
+| Field     | Type      | Required | Notes       |
+| --------- | --------- | -------- | ----------- |
+| id        | uuid/cuid | yes      | Primary key |
+| {{FIELD}} | {{TYPE}}  | yes/no   | {{NOTES}}   |
 
 #### Relationships
+
 - {{RELATIONSHIP_DESCRIPTION}} (one-to-many, many-to-many, etc.)
 
 #### Key Decisions
+
 - {{DECISION_QUESTION}} → {{PROPOSED_ANSWER}}
 ```
 
@@ -94,9 +100,9 @@
 ```markdown
 ## Feature → Table Map
 
-| Feature | Tables Involved | Primary Table | Type |
-|---------|----------------|---------------|------|
-| {{FEATURE}} | {{TABLES}} | {{PRIMARY}} | CRUD / Read-only / Aggregation |
+| Feature     | Tables Involved | Primary Table | Type                           |
+| ----------- | --------------- | ------------- | ------------------------------ |
+| {{FEATURE}} | {{TABLES}}      | {{PRIMARY}}   | CRUD / Read-only / Aggregation |
 ```
 
 4. **Surface schema decisions** — Present the top 2-4 schema decisions to the user:
@@ -105,6 +111,7 @@
    - "Store pricing in the database or in code?"
 
 ### Validation Questions
+
 - Does every "Backend" feature from the Pages module have a corresponding table?
 - Are there tables with no features mapping to them? (dead tables)
 - Are there features that need data but have no table? (missing entities)
@@ -165,9 +172,11 @@ graph TB
 **Risk level:** low / medium / high
 
 #### Integration Points
+
 - {{WHAT_CONNECTS_TO_IT}}
 
 #### Failure Mode
+
 - {{WHAT_HAPPENS_IF_IT_GOES_DOWN}}
 ```
 
@@ -176,8 +185,8 @@ graph TB
 ```markdown
 ## Risk Areas
 
-| Area | Risk | Mitigation |
-|------|------|------------|
+| Area          | Risk                    | Mitigation        |
+| ------------- | ----------------------- | ----------------- |
 | {{COMPONENT}} | {{WHAT_COULD_GO_WRONG}} | {{HOW_TO_HANDLE}} |
 ```
 
@@ -187,6 +196,7 @@ graph TB
    - "Queue for background jobs or inline processing?"
 
 ### Validation Questions
+
 - Does every external service have a failure mode defined?
 - Are there components with no connections? (orphaned)
 - Does data flow from user action to storage have a clear path?
@@ -204,6 +214,6 @@ After all selected modules are complete, verify consistency:
 
 ---
 
-*These modules are original implementations — not ported from GSD or any external framework.*
-*Created for `/lean:start` Stage 3 (Product Design).*
-*Referenced by: `~/.claude/lean-gsd/workflows/start.md`*
+_These modules are original implementations — not ported from GSD or any external framework._
+_Created for `/lean:start` Stage 3 (Product Design)._
+_Referenced by: `~/.claude/lean-gsd/workflows/start.md`_

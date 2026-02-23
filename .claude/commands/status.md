@@ -68,11 +68,14 @@ ls .planning/phases/*/  2>/dev/null
 ```
 
 For each phase directory, count:
+
 - PLAN.md files (planned)
 - SUMMARY.md files (executed)
+- UNIFY.md files (reconciled)
 - VERIFICATION.md files (verified)
 
 This gives per-phase granularity:
+
 - Plans created vs executed
 - Phases verified vs unverified
 
@@ -103,8 +106,8 @@ ${PROGRESS_BAR} ${PERCENTAGE}% (${COMPLETED}/${TOTAL} phases)
 
 ### Phase Breakdown
 
-| # | Phase | Plans | Executed | Verified | Status |
-|---|-------|-------|----------|----------|--------|
+| # | Phase | Plans | Executed | Unified | Verified | Status |
+|---|-------|-------|----------|---------|----------|--------|
 ${PHASE_TABLE}
 
 ### Current Position
@@ -136,11 +139,13 @@ ${SUGGESTED_NEXT_ACTION}
 ### Progress Bar Format
 
 Overall:
+
 ```
 ████████░░ 80% (4/5 phases)
 ```
 
 Per-phase in the table:
+
 - Completed: `done`
 - Partially executed: `████░ 3/5 plans`
 - Planned but not executed: `planned`
@@ -169,7 +174,8 @@ BAR = "█" * FILLED + "░" * EMPTY
 ### Active Debug Sessions
 
 | Session | Status | Hypothesis |
-|---------|--------|------------|
+| ------- | ------ | ---------- |
+
 ${DEBUG_TABLE}
 ```
 
@@ -179,21 +185,23 @@ ${DEBUG_TABLE}
 
 Based on the current state, suggest the most logical next command:
 
-| State | Suggestion |
-|-------|------------|
-| No phases planned | "Run `/lean:plan 1` to plan Phase 1" |
-| Phase planned, not executed | "Run `/lean:build ${PHASE}` to execute Phase ${PHASE}" |
-| Phase executed, not verified | "Run `/lean:verify ${PHASE}` to verify Phase ${PHASE}" |
-| Phase verified with gaps | "Run `/lean:plan ${PHASE} --gaps` to fix verification gaps" |
-| Phase verified, passed | "Run `/lean:plan ${NEXT_PHASE}` to plan the next phase" |
-| All phases complete | "All phases complete. Consider running `/lean:verify` on each phase for final review." |
-| Active blockers | "Resolve active blocker before continuing: ${BLOCKER}" |
-| Active debug session | "Resume debugging with `/lean:debug ${SESSION_DESCRIPTION}`" |
+| State                          | Suggestion                                                                             |
+| ------------------------------ | -------------------------------------------------------------------------------------- |
+| No phases planned              | "Run `/lean:plan 1` to plan Phase 1"                                                   |
+| Phase planned, not executed    | "Run `/lean:build ${PHASE}` to execute Phase ${PHASE}"                                 |
+| Phase built, not unified       | "Run `/lean:unify ${PHASE}` to reconcile plan vs actual"                               |
+| Phase unified with AC failures | "Run `/lean:plan ${PHASE}` to create a fix plan"                                       |
+| Phase unified, not verified    | "Run `/lean:verify ${PHASE}` to verify Phase ${PHASE}"                                 |
+| Phase verified with gaps       | "Run `/lean:plan ${PHASE} --gaps` to fix verification gaps"                            |
+| Phase verified, passed         | "Run `/lean:plan ${NEXT_PHASE}` to plan the next phase"                                |
+| All phases complete            | "All phases complete. Consider running `/lean:verify` on each phase for final review." |
+| Active blockers                | "Resolve active blocker before continuing: ${BLOCKER}"                                 |
+| Active debug session           | "Resume debugging with `/lean:debug ${SESSION_DESCRIPTION}`"                           |
 
 Pick the FIRST matching state from the table (priority order).
 
 ---
 
-*This is a lightweight, read-only command. No agents are spawned.*
-*Reads ROADMAP.md, STATE.md, and phase directories to build the dashboard.*
-*Referenced by: `~/.claude/lean-gsd/commands/status.md`*
+_This is a lightweight, read-only command. No agents are spawned._
+_Reads ROADMAP.md, STATE.md, and phase directories to build the dashboard._
+_Referenced by: `~/.claude/lean-gsd/commands/status.md`_

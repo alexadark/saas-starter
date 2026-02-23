@@ -9,11 +9,13 @@
 ## Prerequisites
 
 Load these references before beginning:
+
 - @~/.claude/lean-gsd/references/stack-defaults.md — default stack context
 - @~/.claude/lean-gsd/references/questioning.md — questioning techniques
 - @~/.claude/lean-gsd/references/design-modules.md — product design guide
 
 Templates available at:
+
 - @~/.claude/lean-gsd/templates/project.md — PROJECT.md template
 - @~/.claude/lean-gsd/templates/roadmap.md — ROADMAP.md template
 - @~/.claude/lean-gsd/templates/state.md — STATE.md template
@@ -57,6 +59,7 @@ Weave these naturally into conversation. Do NOT walk through them as a list:
 Use AskUserQuestion to help users think by presenting concrete options to react to.
 
 When the user gives a vague answer:
+
 ```
 AskUserQuestion:
   header: "{{TOPIC}}"
@@ -145,6 +148,7 @@ Continue to Stage 3.
 ### If "Domain research"
 
 Create the research output directory:
+
 ```bash
 mkdir -p .planning/research
 ```
@@ -152,6 +156,7 @@ mkdir -p .planning/research
 Spawn **2 research agents in parallel** using the Task tool:
 
 **Agent 1: Features Research**
+
 ```
 Task:
   description: "Research what users expect from {{PRODUCT_TYPE}} products"
@@ -159,9 +164,11 @@ Task:
     {{FEATURES_RESEARCH_PROMPT}}
   subagent_type: "general-purpose"
 ```
+
 Output: `.planning/research/FEATURES.md`
 
 **Agent 2: Pitfalls Research**
+
 ```
 Task:
   description: "Research common failures and mistakes in {{PRODUCT_TYPE}} products"
@@ -169,6 +176,7 @@ Task:
     {{PITFALLS_RESEARCH_PROMPT}}
   subagent_type: "general-purpose"
 ```
+
 Output: `.planning/research/PITFALLS.md`
 
 Wait for both agents to complete. Then continue to Stage 3.
@@ -176,6 +184,7 @@ Wait for both agents to complete. Then continue to Stage 3.
 ### If "Full research"
 
 Create the research output directory:
+
 ```bash
 mkdir -p .planning/research
 ```
@@ -183,6 +192,7 @@ mkdir -p .planning/research
 Spawn **4 research agents in parallel** using the Task tool:
 
 **Agent 1: Stack Research**
+
 ```
 Task:
   description: "Evaluate stack choices for {{PROJECT_NAME}}"
@@ -190,9 +200,11 @@ Task:
     {{STACK_RESEARCH_PROMPT}}
   subagent_type: "general-purpose"
 ```
+
 Output: `.planning/research/STACK.md`
 
 **Agent 2: Features Research**
+
 ```
 Task:
   description: "Research what users expect from {{PRODUCT_TYPE}} products"
@@ -200,9 +212,11 @@ Task:
     {{FEATURES_RESEARCH_PROMPT}}
   subagent_type: "general-purpose"
 ```
+
 Output: `.planning/research/FEATURES.md`
 
 **Agent 3: Architecture Research**
+
 ```
 Task:
   description: "Research architecture patterns for {{PRODUCT_TYPE}}"
@@ -210,9 +224,11 @@ Task:
     {{ARCHITECTURE_RESEARCH_PROMPT}}
   subagent_type: "general-purpose"
 ```
+
 Output: `.planning/research/ARCHITECTURE.md`
 
 **Agent 4: Pitfalls Research**
+
 ```
 Task:
   description: "Research common failures and mistakes in {{PRODUCT_TYPE}} products"
@@ -220,11 +236,13 @@ Task:
     {{PITFALLS_RESEARCH_PROMPT}}
   subagent_type: "general-purpose"
 ```
+
 Output: `.planning/research/PITFALLS.md`
 
 Wait for all 4 agents to complete.
 
 Then generate a synthesis:
+
 - Read all 4 research outputs
 - Write `.planning/research/SUMMARY.md` — a concise synthesis of key findings, conflicts, and recommendations across all research
 - Present the top 3-5 insights to the user before continuing
@@ -410,6 +428,7 @@ Report any gaps to the user. Fix issues before proceeding.
 ### Extract Features
 
 Gather all features from:
+
 - PROJECT.md — MVP Core Functionalities and Key User Stories
 - `.planning/design/pages.md` — features tagged as essential (if it exists)
 - `.planning/design/data-model.md` — entity-related features (if it exists)
@@ -436,6 +455,7 @@ AskUserQuestion:
 ```
 
 **The AI should propose an initial categorization** based on the conversation:
+
 - Features explicitly discussed as MVP -> v1
 - Features mentioned as "nice to have" or "eventually" -> Later
 - Features explicitly excluded -> Out of Scope
@@ -445,15 +465,18 @@ Present the proposed categorization clearly:
 
 ```markdown
 ### v1 (Build Now)
+
 - Feature A
 - Feature B
 - Feature C
 
 ### Later
+
 - Feature D
 - Feature E
 
 ### Out of Scope
+
 - Feature F
 ```
 
@@ -494,6 +517,7 @@ Loop until "Done — scope is set" is selected.
 6. Assign features to phases
 
 Fill in the template:
+
 - `{{PROJECT_NAME}}` — from PROJECT.md
 - `{{DATE}}` / `{{LAST_UPDATED}}` — today's date
 - `{{V1_FEATURE}}` entries — from Stage 4
@@ -540,6 +564,7 @@ mkdir -p .planning/design
 ```
 
 Create phase directories based on the roadmap:
+
 ```bash
 mkdir -p .planning/phases/01-{{PHASE_1_SLUG}}
 mkdir -p .planning/phases/02-{{PHASE_2_SLUG}}
@@ -746,7 +771,7 @@ Task:
 **Used in:** Full research only
 **Output:** `.planning/research/ARCHITECTURE.md`
 
-```
+````
 Task:
   description: "Architecture Research for {{PROJECT_NAME}}"
   prompt: |
@@ -815,7 +840,7 @@ Task:
     Use WebSearch and WebFetch to find real, current information.
     Write the output file when complete.
   subagent_type: "general-purpose"
-```
+````
 
 ---
 
@@ -911,21 +936,27 @@ After all 4 research agents complete, generate a synthesis:
 ## Key Findings
 
 ### Stack
+
 {{TOP_2_3_STACK_INSIGHTS}}
 
 ### Features
+
 {{TOP_2_3_FEATURE_INSIGHTS}}
 
 ### Architecture
+
 {{TOP_2_3_ARCHITECTURE_INSIGHTS}}
 
 ### Pitfalls
+
 {{TOP_2_3_PITFALL_INSIGHTS}}
 
 ## Conflicts & Trade-offs
+
 {{ANY_CONTRADICTIONS_BETWEEN_RESEARCH_OUTPUTS}}
 
 ## Top Recommendations
+
 1. {{RECOMMENDATION}}
 2. {{RECOMMENDATION}}
 3. {{RECOMMENDATION}}
@@ -933,6 +964,7 @@ After all 4 research agents complete, generate a synthesis:
 5. {{RECOMMENDATION}}
 
 ## Impact on PROJECT.md
+
 {{SUGGESTED_UPDATES_TO_PROJECT_MD_IF_ANY}}
 ```
 
@@ -955,6 +987,6 @@ If "Update PROJECT.md" — apply relevant findings and rewrite PROJECT.md with t
 
 ---
 
-*This workflow is the entry point for every new project.*
-*Created for `/lean:start` — the most complex command in the framework.*
-*Referenced by: `~/.claude/lean-gsd/commands/start.md`*
+_This workflow is the entry point for every new project._
+_Created for `/lean:start` — the most complex command in the framework._
+_Referenced by: `~/.claude/lean-gsd/commands/start.md`_

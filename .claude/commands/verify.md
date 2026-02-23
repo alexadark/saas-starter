@@ -142,11 +142,11 @@ For each plan in the phase:
 ```markdown
 ### Plan vs Outcome: ${PLAN_ID}
 
-| Aspect | Planned | Actual | Drift |
-|--------|---------|--------|-------|
-| Tasks | ${PLANNED_TASKS} | ${COMPLETED_TASKS} | ${DRIFT_OR_MATCH} |
-| Files | ${PLANNED_FILES} | ${ACTUAL_FILES} | ${DRIFT_OR_MATCH} |
-| Deviations | 0 | ${DEVIATION_COUNT} | ${DEVIATION_SUMMARY} |
+| Aspect     | Planned          | Actual             | Drift                |
+| ---------- | ---------------- | ------------------ | -------------------- |
+| Tasks      | ${PLANNED_TASKS} | ${COMPLETED_TASKS} | ${DRIFT_OR_MATCH}    |
+| Files      | ${PLANNED_FILES} | ${ACTUAL_FILES}    | ${DRIFT_OR_MATCH}    |
+| Deviations | 0                | ${DEVIATION_COUNT} | ${DEVIATION_SUMMARY} |
 ```
 
 4. Highlight significant drift:
@@ -169,6 +169,6 @@ For each plan in the phase:
 
 ---
 
-*This command spawns the `lean-verifier` agent for goal-backward verification.*
-*The `--review` flag adds plan-vs-outcome drift detection.*
-*Referenced by: `~/.claude/lean-gsd/commands/verify.md`*
+_This command spawns the `lean-verifier` agent for goal-backward verification._
+_The `--review` flag adds plan-vs-outcome drift detection._
+_Referenced by: `~/.claude/lean-gsd/commands/verify.md`_

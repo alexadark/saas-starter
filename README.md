@@ -7,6 +7,7 @@ Extends [web-starter] with authentication, dashboard layout, and project managem
 ## Quick Start
 
 1. Clone and init:
+
    ```bash
    git clone git@github.com:YOUR_USER/saas-starter.git my-saas
    cd my-saas
@@ -23,6 +24,7 @@ Extends [web-starter] with authentication, dashboard layout, and project managem
 ## What's Included
 
 Everything from web-starter, plus:
+
 - Supabase Auth (email/password, OAuth-ready)
 - Protected dashboard route
 - Auth pages (login, signup, forgot password, reset password, verify email)

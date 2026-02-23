@@ -17,6 +17,12 @@ Read the plan file provided in your prompt context.
 
 Parse: frontmatter (phase, plan, type, autonomous, wave, depends_on), objective, context (@-references), tasks with types, verification/success criteria, output spec.
 
+**Extract boundaries (if present):**
+
+- Read `<boundaries>` section: store `## DO NOT CHANGE` file list as `PROTECTED_FILES`
+- Store `## SCOPE LIMITS` entries as `SCOPE_LIMITS`
+- These are enforced during task execution (see `<boundary_enforcement>`)
+
 **If plan references CONTEXT.md:** Honor user's vision throughout execution.
 </step>
 
@@ -49,7 +55,7 @@ For each task:
 2. **If `type="checkpoint:*"`:** STOP immediately -- return structured checkpoint message.
 
 3. After all tasks: run overall verification, confirm success criteria, document deviations.
-</step>
+   </step>
 
 </execution_flow>
 
@@ -86,7 +92,14 @@ For each task:
 
 ---
 
+**RETRY LIMIT:**
+
+- Maximum **2 attempts** per task verification. If a `<verify>` step fails twice → treat as Rule 4: stop and report, do NOT retry a third time.
+- **Never** write polling loops (`sleep` + retry). If a command takes time (build, deploy, seed, migration), run it **once**, wait for completion, report the result.
+- If a tool call returns an error identical to the previous attempt → stop immediately (same input = same output).
+
 **RULE PRIORITY:**
+
 1. Rule 4 applies -> STOP (architectural decision)
 2. Rules 1-3 apply -> Fix automatically
 3. Genuinely unsure -> Rule 4 (ask)
@@ -96,12 +109,34 @@ For each task:
 **When in doubt:** "Does this affect correctness, security, or ability to complete task?" YES -> Rules 1-3. MAYBE -> Rule 4.
 </deviation_rules>
 
+<boundary_enforcement>
+**Before modifying any file in a `type="auto"` task, enforce plan boundaries.**
+
+**Step 1 — Check DO NOT CHANGE:**
+
+```
+for each FILE in task.files:
+  if FILE matches any entry in PROTECTED_FILES:
+    STOP → escalate as R4 boundary violation:
+    "Boundary violation: '{FILE}' is listed in <boundaries> ## DO NOT CHANGE.
+     Cannot modify this file. Requires user decision before continuing."
+```
+
+**Step 2 — Check SCOPE LIMITS before adding unplanned work:**
+
+- If a deviation (R1-R3 fix) would touch a file in SCOPE_LIMITS → treat as R4 instead
+- Stop and ask rather than auto-fixing across scope boundaries
+
+**Key rule:** Protected files block execution. SCOPE_LIMITS block auto-fix expansion. Neither blocks STOP + report.
+</boundary_enforcement>
+
 <task_commit_protocol>
 After each task completes (verification passed, done criteria met), commit immediately.
 
 **1. Check modified files:** `git status --short`
 
 **2. Stage task-related files individually** (NEVER `git add .` or `git add -A`):
+
 ```bash
 git add src/api/auth.ts
 git add src/types/user.ts
@@ -118,6 +153,7 @@ git add src/types/user.ts
 | `chore`    | Config, tooling, dependencies    |
 
 **4. Commit with conventional format:**
+
 ```bash
 git commit -m "{type}({phase}-{plan}): {concise task description}
 
@@ -169,11 +205,14 @@ When hitting checkpoint or auth gate, return this structure:
 **Blocked by:** [specific blocker]
 
 ### Checkpoint Details
+
 [Type-specific content]
 
 ### Awaiting
+
 [What user needs to do/provide]
 ```
+
 </checkpoint_return_format>
 
 <authentication_gates>
@@ -194,7 +233,7 @@ If spawned as continuation agent (`<completed_tasks>` in prompt):
 3. Start from resume point in prompt
 4. Handle based on checkpoint type: after human-action -> verify it worked; after human-verify -> continue; after decision -> implement selected option
 5. If another checkpoint hit -> return with ALL completed tasks (previous + new)
-</continuation_handling>
+   </continuation_handling>
 
 <tdd_execution>
 When executing task with `tdd="true"`:
@@ -217,6 +256,7 @@ After all tasks complete, create `{phase}-{plan}-SUMMARY.md` in the plan's direc
 **Title:** `# Phase [X] Plan [Y]: [Name] Summary`
 
 **One-liner must be substantive:**
+
 - Good: "JWT auth with refresh rotation using jose library"
 - Bad: "Authentication implemented"
 
@@ -228,6 +268,7 @@ After all tasks complete, create `{phase}-{plan}-SUMMARY.md` in the plan's direc
 ### Auto-fixed Issues
 
 **1. [Rule N - Type] Short description**
+
 - **Found during:** Task N
 - **Issue:** [description]
 - **Fix:** [what was done]
@@ -245,11 +286,13 @@ Or: "None -- plan executed exactly as written."
 After writing SUMMARY.md, verify all claims before proceeding.
 
 **1. Check all claimed files exist:**
+
 ```bash
 [ -f "path/to/file" ] && echo "FOUND: path/to/file" || echo "MISSING: path/to/file"
 ```
 
 **2. Check all claimed commits exist:**
+
 ```bash
 git log --oneline --all | grep -q "{hash}" && echo "FOUND: {hash}" || echo "MISSING: {hash}"
 ```
@@ -264,18 +307,19 @@ Auto-detect the project's test framework ONCE at execution start. Cache the resu
 
 **Detection order (first match wins):**
 
-| Check | Framework | Run Command |
-| ----- | --------- | ----------- |
-| `vitest.config.*` exists | Vitest | `npx vitest run` |
-| `jest.config.*` exists | Jest | `npx jest` |
-| `package.json` test script contains "vitest" | Vitest | `npm test` |
-| `package.json` test script contains "jest" | Jest | `npm test` |
-| `package.json` test script contains "mocha" | Mocha | `npm test` |
-| `pytest.ini` or `pyproject.toml [tool.pytest]` | pytest | `pytest` |
-| `Cargo.toml` exists | Cargo | `cargo test` |
-| `go.mod` exists | Go | `go test ./...` |
+| Check                                          | Framework | Run Command      |
+| ---------------------------------------------- | --------- | ---------------- |
+| `vitest.config.*` exists                       | Vitest    | `npx vitest run` |
+| `jest.config.*` exists                         | Jest      | `npx jest`       |
+| `package.json` test script contains "vitest"   | Vitest    | `npm test`       |
+| `package.json` test script contains "jest"     | Jest      | `npm test`       |
+| `package.json` test script contains "mocha"    | Mocha     | `npm test`       |
+| `pytest.ini` or `pyproject.toml [tool.pytest]` | pytest    | `pytest`         |
+| `Cargo.toml` exists                            | Cargo     | `cargo test`     |
+| `go.mod` exists                                | Go        | `go test ./...`  |
 
 **Detection script:**
+
 ```bash
 TEST_FRAMEWORK="none"; TEST_CMD=""
 if ls vitest.config.* 2>/dev/null | head -1; then TEST_FRAMEWORK="vitest"; TEST_CMD="npx vitest run"
@@ -292,14 +336,18 @@ echo "Detected: $TEST_FRAMEWORK -> $TEST_CMD"
 ```
 
 **Usage during verify steps:**
+
 - `<verify>` says "run tests" -> use `$TEST_CMD`
 - Run specific files: Vitest/Jest `$TEST_CMD path/to/test.spec.ts`, pytest `$TEST_CMD path/to/test_file.py`, cargo `cargo test test_name`, go `go test ./path/to/package`
 
 **Fallback:** If no framework detected, skip test verification and note in SUMMARY.md:
+
 ```markdown
 ## Notes
+
 - No test framework detected. Test verification steps were skipped.
 ```
+
 </auto_detect_test_framework>
 
 <final_commit>
@@ -314,6 +362,7 @@ Separate from per-task commits -- captures execution results only.
 </final_commit>
 
 <completion_format>
+
 ```markdown
 ## PLAN COMPLETE
 
@@ -322,6 +371,7 @@ Separate from per-task commits -- captures execution results only.
 **SUMMARY:** {path to SUMMARY.md}
 
 **Commits:**
+
 - {hash}: {message}
 - {hash}: {message}
 
@@ -343,4 +393,4 @@ Plan execution complete when:
 - [ ] Self-check PASSED (all files exist, all commits exist)
 - [ ] Final documentation commit made
 - [ ] Completion format returned
-</success_criteria>
+      </success_criteria>

@@ -10,10 +10,12 @@
 ## Prerequisites
 
 Agent definitions:
+
 - @~/.claude/lean-gsd/agents/lean-executor.md — the executor agent prompt
 - @~/.claude/lean-gsd/agents/lean-verifier.md — the verifier agent prompt (optional post-execution)
 
 Templates:
+
 - @~/.claude/lean-gsd/templates/summary.md — SUMMARY.md template (used by executors)
 - @~/.claude/lean-gsd/templates/session.md — session snapshot template
 - @~/.claude/lean-gsd/templates/state.md — STATE.md template
@@ -32,6 +34,7 @@ cat .planning/config.json 2>/dev/null
 ```
 
 **Extract:**
+
 - Project name
 - All phase definitions and statuses from ROADMAP.md
 - Current position from STATE.md
@@ -44,6 +47,7 @@ cat .planning/config.json 2>/dev/null
 **If phase-number was provided as argument:** Use that phase number.
 
 **If phase-number was NOT provided:** Derive from STATE.md:
+
 1. If STATE.md status is "Planned" — use that phase (ready to execute)
 2. If STATE.md status is "In Progress" — use that phase (resume execution)
 3. Otherwise, find the first phase in ROADMAP.md with status "planned" or "in progress"
@@ -78,6 +82,7 @@ ls "$PHASE_DIR"/*-PLAN.md 2>/dev/null
 ### Parse Each Plan's Frontmatter
 
 For each PLAN.md file, extract from YAML frontmatter:
+
 - `plan` — plan number
 - `wave` — wave assignment (1, 2, 3...)
 - `depends_on` — list of plan IDs this plan requires
@@ -121,10 +126,10 @@ WAVE_ORDER = sorted(WAVES.keys())  # [1, 2, 3, ...]
 **Phase:** {PHASE_NUMBER} — {PHASE_NAME}
 **Plans:** {TOTAL_PLANS} in {TOTAL_WAVES} wave(s)
 
-| Wave | Plans | Autonomous | Dependencies |
-|------|-------|------------|--------------|
-| 1 | {plan-ids} | {yes/no} | none |
-| 2 | {plan-ids} | {yes/no} | {dep-ids} |
+| Wave | Plans      | Autonomous | Dependencies |
+| ---- | ---------- | ---------- | ------------ |
+| 1    | {plan-ids} | {yes/no}   | none         |
+| 2    | {plan-ids} | {yes/no}   | {dep-ids}    |
 ```
 
 ### Record Execution Start Time
@@ -375,6 +380,7 @@ done
 ```
 
 **If any SUMMARY.md is missing or self-check is not PASSED:**
+
 - Report to the user: "Plan {plan_id} completed but SUMMARY verification failed."
 - Do NOT block subsequent waves — this is informational.
 
@@ -383,10 +389,10 @@ done
 ```markdown
 ### Wave {CURRENT_WAVE} Complete
 
-| Plan | Status | Tasks | Commits | Self-Check |
-|------|--------|-------|---------|------------|
-| {plan_id} | completed | {N}/{N} | {commit_count} | PASSED |
-| {plan_id} | completed | {N}/{N} | {commit_count} | PASSED |
+| Plan      | Status    | Tasks   | Commits        | Self-Check |
+| --------- | --------- | ------- | -------------- | ---------- |
+| {plan_id} | completed | {N}/{N} | {commit_count} | PASSED     |
+| {plan_id} | completed | {N}/{N} | {commit_count} | PASSED     |
 ```
 
 Advance to the next wave in `WAVE_ORDER`. Repeat from Step 3a.
@@ -432,10 +438,12 @@ Task:
 Wait for the verifier to complete.
 
 **If verification status is `gaps_found`:**
+
 - Display the gaps to the user
 - Suggest: "Run `/lean:verify {PHASE_NUMBER}` for a detailed report, or fix the gaps and re-verify."
 
 **If verification status is `passed`:**
+
 - Display: "Phase {PHASE_NUMBER} verified successfully."
 
 ### If auto_verify is false:
@@ -450,6 +458,7 @@ Skip verification. Display:
 Read the current ROADMAP.md and update the target phase's status:
 
 **If all plans completed successfully:**
+
 - Set phase status to `completed`
 - Update the Progress Summary section:
   - Increment `Completed`
@@ -457,6 +466,7 @@ Read the current ROADMAP.md and update the target phase's status:
   - Decrement `Remaining`
 
 **If some plans failed or are blocked:**
+
 - Set phase status to `partial` with a note on what completed
 - Do NOT increment `Completed`
 
@@ -475,6 +485,7 @@ Read the current STATE.md and update:
 - `Status` — "Completed" (if all plans passed) or "Partial — {details}" (if some failed)
 
 **If the phase is fully completed:**
+
 - Advance `Phase` to the next incomplete phase (or "All phases complete")
 - Set `Plan` to "Not started"
 - Set `Wave` to "N/A"
@@ -600,22 +611,31 @@ Saved to: `{SESSION_FILE}`
 {IF phase_completed AND next_phase_exists}
 Plan the next phase:
 ```
+
 /lean:plan {NEXT_PHASE_NUMBER}
+
 ```
 {ELIF phase_completed AND verification_not_run}
-Verify this phase:
+Reconcile plan vs actual, then verify:
 ```
-/lean:verify {PHASE_NUMBER}
+
+/lean:unify {PHASE_NUMBER}
+
 ```
+_(Then run `/lean:verify {PHASE_NUMBER}` after reconciling.)_
 {ELIF phase_partial}
 Review failures and retry:
 ```
+
 /lean:build {PHASE_NUMBER}
+
 ```
 {ELIF all_phases_completed}
 All phases complete! Run verification:
 ```
+
 /lean:verify {PHASE_NUMBER}
+
 ```
 {/IF}
 
@@ -656,6 +676,6 @@ Plans already completed are excluded from wave execution. If all plans in a wave
 
 ---
 
-*This workflow is the core execution engine of the Lean GSD framework.*
-*It handles wave-based parallel execution, checkpoint protocols, state management, and session snapshots.*
-*Referenced by: `~/.claude/lean-gsd/commands/build.md`*
+_This workflow is the core execution engine of the Lean GSD framework._
+_It handles wave-based parallel execution, checkpoint protocols, state management, and session snapshots._
+_Referenced by: `~/.claude/lean-gsd/commands/build.md`_

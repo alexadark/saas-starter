@@ -9,9 +9,11 @@
 ## Prerequisites
 
 Agent definition:
+
 - @~/.claude/lean-gsd/agents/lean-planner.md — the planner agent prompt
 
 Templates available at:
+
 - @~/.claude/lean-gsd/templates/plan.md — PLAN.md template
 - @~/.claude/lean-gsd/templates/summary.md — SUMMARY.md template (for reference by planner)
 
@@ -46,6 +48,7 @@ cat .planning/config.json 2>/dev/null
 ```
 
 **Extract from these files:**
+
 - Project name, end goal, tech stack
 - All phase definitions from ROADMAP.md (names, goals, features, statuses)
 - Current position from STATE.md (current phase, plan, wave, status)
@@ -69,6 +72,7 @@ Target phase = Phase {phase-number} from ROADMAP.md
 ```
 
 **Validation:**
+
 - Phase must exist in ROADMAP.md
 - Phase status should not already be "completed" (warn the user if it is and ask for confirmation)
 
@@ -87,6 +91,7 @@ Target phase = first incomplete phase from ROADMAP.md
 ### Extract Phase Details
 
 From ROADMAP.md, extract for the target phase:
+
 - Phase number and name (e.g., `01-auth-and-landing`)
 - Phase goal
 - Features assigned to this phase
@@ -106,6 +111,7 @@ ls "$PHASE_DIR"/*-PLAN.md 2>/dev/null
 ```
 
 **If plans already exist:**
+
 - List them to the user
 - Ask: "Plans already exist for this phase. Do you want to re-plan (overwrites existing plans) or skip?"
 - If skip, stop the workflow
@@ -277,6 +283,7 @@ ls "$PHASE_DIR"/*-PLAN.md 2>/dev/null
 ```
 
 **Validation checks:**
+
 - At least one PLAN.md file exists
 - Each PLAN.md has valid YAML frontmatter (phase, plan, type, wave, depends_on, files_modified, autonomous, must_haves)
 - Wave numbers are consistent (dependencies in lower waves than dependents)
@@ -336,9 +343,10 @@ Verify no file conflicts between same-wave plans:
 ### Next Up
 
 Execute the phase plans:
-
 ```
+
 /lean:build {PHASE_NUMBER}
+
 ```
 
 Clear your context window first for fresh execution with full 200k context per agent.
@@ -348,6 +356,6 @@ Clear your context window first for fresh execution with full 200k context per a
 
 ---
 
-*This workflow handles phase planning for the Lean GSD framework.*
-*No checker loop, no revision protocol — one pass, done.*
-*Referenced by: `~/.claude/lean-gsd/commands/plan.md`*
+_This workflow handles phase planning for the Lean GSD framework._
+_No checker loop, no revision protocol — one pass, done._
+_Referenced by: `~/.claude/lean-gsd/commands/plan.md`_

@@ -60,8 +60,9 @@ Display:
 ```markdown
 ## Session History
 
-| # | Date | Description | Phase | Plans Executed |
-|---|------|-------------|-------|----------------|
+| #   | Date | Description | Phase | Plans Executed |
+| --- | ---- | ----------- | ----- | -------------- |
+
 ${SESSIONS_TABLE}
 
 **Load a session:** `/lean:resume [number]`
@@ -123,9 +124,10 @@ ${BLOCKERS_LIST}
 ${NEXT_STEPS}
 
 ### Suggested Command
-
 ```
+
 ${SUGGESTED_COMMAND}
+
 ```
 
 ---
@@ -172,12 +174,14 @@ ls .planning/debug/*.md 2>/dev/null | grep -v resolved
 ```
 
 If active debug sessions exist:
+
 - State = **debugging interrupted**
 - Read the debug file(s) for current hypothesis and next action
 
 **Check B: Executing phase (mid-build)**
 
 If STATE.md status contains "executing" or "building":
+
 - State = **mid-build**
 - Check which plans have SUMMARY.md vs which are pending:
   ```bash
@@ -193,17 +197,26 @@ If STATE.md status contains "executing" or "building":
 ```
 
 If PLAN.md files exist without corresponding SUMMARY.md files:
+
 - State = **plans pending execution**
 - List which plans are ready to execute
 
-**Check D: Phase completed, not verified**
+**Check D: Phase built, not unified**
 
-If all plans have SUMMARY.md files but no VERIFICATION.md exists:
+If all plans have SUMMARY.md files but no UNIFY.md exists:
+
+- State = **awaiting unify**
+
+**Check E: Phase unified, not verified**
+
+If UNIFY.md exists but no VERIFICATION.md exists:
+
 - State = **awaiting verification**
 
-**Check E: Normal state**
+**Check F: Normal state**
 
 If none of the above, check the latest session snapshot:
+
 ```bash
 ls .planning/sessions/*.md 2>/dev/null | sort | tail -1
 ```
@@ -211,6 +224,7 @@ ls .planning/sessions/*.md 2>/dev/null | sort | tail -1
 ### Detection 4: Load context
 
 Based on the detected state, load relevant files:
+
 - Always: `./STATE.md`, `./ROADMAP.md`
 - If mid-build: the pending PLAN.md files
 - If debugging: the active debug session file(s)
@@ -265,17 +279,18 @@ ${OPTIONS_BASED_ON_STATE}
 
 **Options by state:**
 
-| Detected State | Options |
-|----------------|---------|
-| Debugging interrupted | 1. Resume debug session 2. Start fresh — abandon debug session 3. Do something else |
-| Mid-build | 1. Continue building (resume execution) 2. Check status first 3. Do something else |
-| Plans pending execution | 1. Execute the pending plans 2. Review plans first 3. Re-plan the phase 4. Do something else |
-| Awaiting verification | 1. Run verification 2. Move to next phase 3. Do something else |
-| Normal (between phases) | 1. Plan next phase 2. Quick task 3. Check status 4. Do something else |
+| Detected State          | Options                                                                                               |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| Debugging interrupted   | 1. Resume debug session 2. Start fresh — abandon debug session 3. Do something else                   |
+| Mid-build               | 1. Continue building (resume execution) 2. Check status first 3. Do something else                    |
+| Plans pending execution | 1. Execute the pending plans 2. Review plans first 3. Re-plan the phase 4. Do something else          |
+| Awaiting unify          | 1. Run `/lean:unify [phase]` to reconcile plan vs actual 2. Skip to verification 3. Do something else |
+| Awaiting verification   | 1. Run verification 2. Move to next phase 3. Do something else                                        |
+| Normal (between phases) | 1. Plan next phase 2. Quick task 3. Check status 4. Do something else                                 |
 
 ---
 
-*This is a lightweight command. No agents are spawned.*
-*Reads STATE.md, ROADMAP.md, session snapshots, and phase directories to restore context.*
-*Session snapshots are created by `/lean:build` and `/lean:quick`.*
-*Referenced by: `~/.claude/lean-gsd/commands/resume.md`*
+_This is a lightweight command. No agents are spawned._
+_Reads STATE.md, ROADMAP.md, session snapshots, and phase directories to restore context._
+_Session snapshots are created by `/lean:build` and `/lean:quick`._
+_Referenced by: `~/.claude/lean-gsd/commands/resume.md`_

@@ -33,6 +33,7 @@ fi
 ```
 
 Generate a slug from the task description:
+
 - Lowercase
 - Replace spaces with hyphens
 - Remove special characters
@@ -52,6 +53,7 @@ mkdir -p "$TASK_DIR"
 ### 2a: Understand the Task
 
 Read the task description and identify:
+
 - What needs to change or be created
 - Which files are likely involved
 
@@ -69,6 +71,7 @@ Read the relevant files to understand the current state and what needs to change
 ### 2c: Create Lightweight Plan
 
 Create 1-3 tasks in XML format. Quick plans are simplified:
+
 - **No wave assignment** (single execution, no parallelism)
 - **No depends_on** (tasks execute sequentially)
 - **Type is always `auto`** (no checkpoints for quick tasks)
@@ -114,6 +117,7 @@ ${SUCCESS_CRITERIA}
 ```
 
 **Planning guidelines:**
+
 - Keep it tight: 1-3 tasks, each clearly scoped
 - Be specific in `<action>` — the executor needs exact instructions
 - Include `<verify>` for every task — even quick tasks need validation
@@ -170,6 +174,7 @@ After the executor agent completes:
 Create a session snapshot for this quick task:
 
 1. Determine the next session number:
+
    ```bash
    mkdir -p .planning/sessions
    LAST_SESSION=$(ls .planning/sessions/[0-9][0-9][0-9]-*.md 2>/dev/null | sort | tail -1 | grep -o '[0-9]\{3\}' | head -1)
@@ -199,12 +204,12 @@ Executed quick task: ${TASK_DESCRIPTION}
 
 ## Context
 
-| Field | Value |
-|-------|-------|
-| Phase | Quick Task (ad-hoc) |
-| Plans Executed | 1 |
-| Waves Completed | N/A |
-| Duration | ${DURATION} |
+| Field           | Value               |
+| --------------- | ------------------- |
+| Phase           | Quick Task (ad-hoc) |
+| Plans Executed  | 1                   |
+| Waves Completed | N/A                 |
+| Duration        | ${DURATION}         |
 
 ---
 
@@ -239,7 +244,9 @@ ${VERIFICATION_FROM_SUMMARY}
 
 ### Suggested Command
 ```
+
 /lean:status
+
 ```
 
 ---
@@ -283,7 +290,7 @@ ${COMMIT_LIST}
 
 ---
 
-*This workflow handles ad-hoc tasks outside the normal phase cycle.*
-*Plans inline (no planner agent), then spawns lean-executor for execution.*
-*Results are tracked in STATE.md "Quick Tasks Completed" table.*
-*Referenced by: `~/.claude/lean-gsd/commands/quick.md`*
+_This workflow handles ad-hoc tasks outside the normal phase cycle._
+_Plans inline (no planner agent), then spawns lean-executor for execution._
+_Results are tracked in STATE.md "Quick Tasks Completed" table._
+_Referenced by: `~/.claude/lean-gsd/commands/quick.md`_

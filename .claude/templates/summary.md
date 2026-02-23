@@ -57,9 +57,11 @@ completed: {{COMPLETED_DATE}}
 - **Files modified:** {{FILE_COUNT}}
 
 ## Accomplishments
+
 {{#EACH ACCOMPLISHMENT}}
+
 - {{ACCOMPLISHMENT_TEXT}}
-{{/EACH}}
+  {{/EACH}}
 
 ## Task Commits
 
@@ -74,9 +76,11 @@ Each task was committed atomically:
 _Note: TDD tasks may have multiple commits (test -> feat -> refactor)_
 
 ## Files Created/Modified
+
 {{#EACH FILE_CHANGE}}
+
 - `{{FILE_PATH}}` - {{FILE_DESCRIPTION}}
-{{/EACH}}
+  {{/EACH}}
 
 ## Decisions Made
 
@@ -94,13 +98,14 @@ _Note: TDD tasks may have multiple commits (test -> feat -> refactor)_
 
 {{#EACH DEVIATION}}
 **{{DEVIATION_NUMBER}}. [Rule {{RULE_NUMBER}} - {{RULE_CATEGORY}}] {{BRIEF_DESCRIPTION}}**
+
 - **Found during:** Task {{TASK_NUMBER}} ({{TASK_NAME}})
 - **Issue:** {{ISSUE_DESCRIPTION}}
 - **Fix:** {{FIX_DESCRIPTION}}
 - **Files modified:** {{FIX_FILES}}
 - **Verification:** {{FIX_VERIFICATION}}
 - **Committed in:** {{FIX_COMMIT}} (part of task commit)
-{{/EACH}}
+  {{/EACH}}
 
 ---
 
@@ -137,6 +142,6 @@ _Note: TDD tasks may have multiple commits (test -> feat -> refactor)_
 
 ---
 
-*Phase: {{PHASE_NUMBER}}-{{PHASE_NAME}}*
-*Completed: {{COMPLETED_DATE}}*
-*Template: `~/.claude/lean-gsd/templates/summary.md`*
+_Phase: {{PHASE_NUMBER}}-{{PHASE_NAME}}_
+_Completed: {{COMPLETED_DATE}}_
+_Template: `~/.claude/lean-gsd/templates/summary.md`_

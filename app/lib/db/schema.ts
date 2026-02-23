@@ -7,3 +7,6 @@
 //   email: text("email").notNull().unique(),
 //   createdAt: timestamp("created_at").defaultNow().notNull(),
 // });
+
+// Placeholder export — replace with actual schema tables above
+export {};

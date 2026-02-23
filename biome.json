@@ -42,7 +42,8 @@
 			"!**/.react-router",
 			"!**/dist",
 			"!.carl",
-			"!playwright-report"
+			"!playwright-report",
+			"!test-results"
 		]
 	}
 }

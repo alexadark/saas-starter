@@ -6,8 +6,10 @@ test.describe("Smoke Tests", () => {
 		expect(response?.status()).toBe(200);
 	});
 
-	test("homepage has correct title", async ({ page }) => {
+	test("homepage has no errors in console", async ({ page }) => {
+		const errors: string[] = [];
+		page.on("pageerror", (err) => errors.push(err.message));
 		await page.goto("/");
-		await expect(page).toHaveTitle(/.+/);
+		expect(errors).toHaveLength(0);
 	});
 });

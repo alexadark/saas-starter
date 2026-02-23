@@ -41,6 +41,24 @@ These are dynamically injected based on context and MUST be obeyed.
 - Session is cookie-based via `@supabase/ssr`
 - Protected routes check auth in loader → redirect to `/auth/login` if not authenticated
 
+## Server Utilities
+
+### Feature Flags (`app/lib/server/features.ts`)
+
+- `isEnabled(db, "flag-key")` — check if a flag is enabled globally
+- `isEnabled(db, "flag-key", { orgId })` — check with org-level override
+- `getEnabledFlags(db)` — get Set of all enabled flag keys
+- Flags stored in `feature_flags` table with JSONB metadata for per-org overrides
+
+### JSONB Config (`app/lib/server/config.ts`)
+
+- `getConfig(db, scope, key, zodSchema)` — get a typed config value
+- `getConfigCascade(db, key, zodSchema, scopes)` — cascading resolution (user → org → global)
+- `setConfig(db, scope, key, value)` — upsert a config entry
+- `deleteConfig(db, scope, key)` — remove a config entry
+- Scope convention: `"global"`, `"org:{id}"`, `"user:{id}"`
+- All values validated with Zod at runtime — no raw JSON escapes
+
 ## Testing Conventions
 
 - **Every component gets three files**: `{name}.tsx` + `{name}.stories.tsx` + `{name}.test.tsx`
@@ -56,7 +74,10 @@ These are dynamically injected based on context and MUST be obeyed.
 ```
 app/
   components/      UI components organized by feature
-  lib/             Utilities + Supabase clients
+  lib/
+    db/              Drizzle ORM client + schema
+    server/          Server utilities (features, config)
+    supabase/        Supabase clients
   routes/          Route modules
     auth/          Authentication pages
     dashboard/     Protected dashboard

@@ -31,6 +31,7 @@ These are dynamically injected based on context and MUST be obeyed.
 - All code, comments, and documentation in English
 - TypeScript strict mode — no `any`
 - Biome handles formatting and linting (not ESLint/Prettier)
+- React components use `const` arrow functions (not `function` declarations)
 
 ## Auth
 

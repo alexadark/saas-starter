@@ -13,5 +13,5 @@ import { Image as UnpicImage } from "@unpic/react";
  * For local static assets, use a plain <img> tag with loading="lazy".
  */
 export function Image(props: ImageProps) {
-  return <UnpicImage {...props} />;
+	return <UnpicImage {...props} />;
 }

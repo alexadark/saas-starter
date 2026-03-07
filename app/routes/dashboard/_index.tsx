@@ -32,7 +32,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-border">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+          <h1 className="text-lg font-semibold">SaaS Starter</h1>
           <Form method="post">
             <Button type="submit" variant="outline" size="sm">
               Sign out

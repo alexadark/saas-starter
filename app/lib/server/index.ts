@@ -9,30 +9,25 @@
  * ```
  */
 
+// JSONB config
+export { deleteConfig, getConfig, getConfigCascade, setConfig } from "./config";
 // Event bus
 export {
-  type AppEvents,
-  type EventHandler,
-  on,
-  emit,
-  removeAllListeners,
+	type AppEvents,
+	type EventHandler,
+	emit,
+	on,
+	removeAllListeners,
 } from "./events";
-
-// Logger
-export { logger } from "./logger";
-
-// Rate limiter
-export {
-  type RateLimitResult,
-  createRateLimiter,
-  getRateLimitHeaders,
-} from "./rate-limit";
-
-// JSONB config
-export { getConfig, getConfigCascade, setConfig, deleteConfig } from "./config";
-
 // Feature flags
-export { isEnabled, getEnabledFlags } from "./features";
-
+export { getEnabledFlags, isEnabled } from "./features";
 // Form validation
 export { formDataToObject, parseFormData } from "./form";
+// Logger
+export { logger } from "./logger";
+// Rate limiter
+export {
+	createRateLimiter,
+	getRateLimitHeaders,
+	type RateLimitResult,
+} from "./rate-limit";

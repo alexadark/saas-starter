@@ -86,6 +86,60 @@ These are dynamically injected based on context and MUST be obeyed.
 - `getRateLimitHeaders(result)` — standard rate limit headers
 - In-memory sliding window — resets on deploy (fine at starter scale)
 
+## Building Features (Deep Module Pattern)
+
+This project follows the "deep module" philosophy: each feature is a self-contained folder with a narrow public interface (barrel export) and rich internal implementation. AI agents and developers alike benefit from discoverable APIs and test-locked behavior.
+
+### Barrel Import
+
+All server utilities are available from a single import path:
+
+```ts
+import {
+  logger,
+  emit,
+  on,
+  createRateLimiter,
+  parseFormData,
+  isEnabled,
+  getConfig,
+} from "~/lib/server";
+```
+
+Do NOT import from individual files (e.g., `~/lib/server/logger`) unless you have a specific reason (circular dependency avoidance).
+
+### Feature Structure
+
+When adding a new feature (e.g., "billing"), organize it as a deep module:
+
+```
+app/lib/server/
+  billing/
+    index.ts          # Public API - barrel export (the "narrow interface")
+    plans.ts           # Internal: plan management logic
+    invoices.ts        # Internal: invoice generation
+    stripe.ts          # Internal: Stripe integration
+    __tests__/
+      plans.test.ts
+      invoices.test.ts
+      stripe.test.ts
+```
+
+Then re-export from the server barrel:
+
+```ts
+// app/lib/server/index.ts
+export { createSubscription, cancelSubscription, getInvoices } from "./billing";
+```
+
+### Conventions
+
+1. **Every module gets tests** - Tests lock behavior so AI agents get fast feedback loops. No untested server code.
+2. **Barrel exports are the public API** - If it's not in `index.ts`, it's internal. AI agents should only use exported symbols.
+3. **Mock the DB, not the module** - For modules using Drizzle, mock the DB chain (`select/insert/update/delete`) rather than mocking the module itself. See `app/lib/server/__tests__/config.test.ts` for the pattern.
+4. **Type-safe all the way** - Use Zod schemas for validation at boundaries. Never pass raw `unknown` through the public API without validation.
+5. **Keep modules independent** - Server utilities should not import from each other unless necessary. If module A needs module B, consider whether B's function should be passed as a parameter instead.
+
 ## Testing Conventions
 
 - **Every component gets three files**: `{name}.tsx` + `{name}.stories.tsx` + `{name}.test.tsx`

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const hasSupabase = !!(
-  process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_ANON_KEY
+  process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY
 );
 
 test.describe("Login Page", () => {

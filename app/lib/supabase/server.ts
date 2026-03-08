@@ -8,8 +8,8 @@ export function createSupabaseServerClient(request: Request) {
   const headers = new Headers();
 
   const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    import.meta.env.VITE_SUPABASE_URL!,
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {

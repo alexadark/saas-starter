@@ -1,0 +1,1954 @@
+{
+  "id": "30d78617-cd94-45b3-9499-e7dde9e0f641",
+  "repoName": "saas-starter",
+  "repoUrl": "local",
+  "frameworks": ["Node.js", "Vite", "Supabase"],
+  "totalRoutes": 9,
+  "totalClaims": 69,
+  "verdicts": {
+    "pass": 68,
+    "partial": 1,
+    "fail": 0,
+    "na": 0
+  },
+  "bugs": {
+    "critical": 0,
+    "high": 0,
+    "medium": 1,
+    "low": 0
+  },
+  "score": 99,
+  "executiveSummary": "The saas-starter repository has completed a comprehensive compliance assessment covering 9 routes and 69 individual verified claims, achieving a score of 99 out of 100. This is an exceptional result by any standard. A score at this level indicates that the codebase behaves reliably and consistently with its intended specifications across nearly every measurable scenario, and reflects a high degree of engineering discipline in how the application was built and maintained. For a production SaaS product, this score represents a low-risk posture from a functional compliance standpoint.\n\nThe single identified deficiency carries a medium severity rating, and there are zero critical or high-severity bugs in the entire assessed surface area. This means no issues were found that could expose users to data loss, security vulnerabilities, unauthorized access, or service outages. The medium-severity finding is isolated to a specific rendering behavior within the authenticated dashboard and does not affect authentication integrity, data handling, or core user flows. While it warrants attention before the next release cycle, it presents no immediate business or reputational risk that would require emergency remediation.\n\nAcross eight of the nine assessed domains - including public-facing pages, the full user registration and email verification flow, login, password reset, and logout - the application achieved perfect 100% compliance. The only domain falling below full compliance is Authenticated Dashboard Access, which scored 88%, reflecting the single medium bug identified around how the dashboard shell renders its header and welcome content for signed-in users. Every security-sensitive flow, including the PKCE session exchange used in OAuth authentication, passed all verification claims without exception, which is particularly important from a user trust and regulatory perspective.\n\nThe recommended next step is to address the dashboard rendering issue in the current or next sprint, as it represents the only gap between this codebase and a perfect compliance posture. Beyond that, the team should consider establishing a recurring compliance assessment cadence - quarterly at minimum - to ensure this score is maintained as the product evolves and new routes are added. Given the strength of the current results, investing in automated regression coverage for the verified claims would allow the team to protect this compliance baseline without manual re-assessment overhead at each release.",
+  "routeResults": [
+    {
+      "requirement": {
+        "id": "FLOW-001",
+        "route": "GET /",
+        "domain": "Public Home Page Visit",
+        "component": "app/routes/_index.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Render public layout with navigation header (Sign in / Get started links) and footer",
+          "Render welcome placeholder page with heading and CTA copy"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-home-visit-STEP-001",
+          "section": "Public Home Page Visit",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Public Home Page Visit\" step 1: Render public layout with navigation header (Sign in / Get started links) and footer",
+          "testable": true
+        },
+        {
+          "id": "flow-home-visit-STEP-002",
+          "section": "Public Home Page Visit",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Public Home Page Visit\" step 2: Render welcome placeholder page with heading and CTA copy",
+          "testable": true
+        },
+        {
+          "id": "flow-home-visit-SUCCESS",
+          "section": "Public Home Page Visit",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Public Home Page Visit\" success: Welcome page rendered with nav links to auth routes",
+          "testable": true
+        },
+        {
+          "id": "flow-home-visit-GAP-001",
+          "section": "Public Home Page Visit",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: Landing page has no real marketing content, pricing, or CTA linked to a product",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-home-visit-GAP-001",
+          "claim": "Gap: Landing page has no real marketing content, pricing, or CTA linked to a product",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/_index.tsx",
+              "lineNumber": 1,
+              "snippet": "export default function Home() {\n  return (\n    <div className=\"flex min-h-screen items-center justify-center\">\n      <div className=\"text-center\">\n        <h1 className=\"text-4xl font-bold\">Welcome</h1>",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The entire index route is 12 lines with only a 'Welcome' heading and generic placeholder text - there is no marketing copy, no pricing section, and no CTA linked to any product feature, confirming the gap as stated."
+        },
+        {
+          "claimId": "flow-home-visit-STEP-001",
+          "claim": "Flow \"Public Home Page Visit\" step 1: Render public layout with navigation header (Sign in / Get started links) and footer",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/layouts/public-layout.tsx",
+              "lineNumber": 14,
+              "snippet": "<Link to=\"/auth/login\"><Button variant=\"ghost\" size=\"sm\">Sign in</Button></Link>\n<Link to=\"/auth/signup\"><Button size=\"sm\">Get started</Button></Link>",
+              "confidence": 0.98
+            },
+            {
+              "file": "app/routes/layouts/public-layout.tsx",
+              "lineNumber": 28,
+              "snippet": "<footer className=\"border-t border-border\">\n  <div className=\"container mx-auto px-4 py-6 text-center text-sm text-muted-foreground\">",
+              "confidence": 0.98
+            },
+            {
+              "file": "app/routes.ts",
+              "lineNumber": 8,
+              "snippet": "layout(\"routes/layouts/public-layout.tsx\", [index(\"routes/_index.tsx\")])",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The public layout renders a header with both 'Sign in' (→ /auth/login) and 'Get started' (→ /auth/signup) nav links plus a footer, and the route config wraps the index route inside this layout."
+        },
+        {
+          "claimId": "flow-home-visit-STEP-002",
+          "claim": "Flow \"Public Home Page Visit\" step 2: Render welcome placeholder page with heading and CTA copy",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/_index.tsx",
+              "lineNumber": 4,
+              "snippet": "<h1 className=\"text-4xl font-bold\">Welcome</h1>\n<p className=\"mt-4 text-muted-foreground\">Start building your project.</p>",
+              "confidence": 0.93
+            }
+          ],
+          "reasoning": "The index route renders a centered welcome heading and placeholder CTA copy ('Start building your project.'), exactly matching a welcome placeholder page as claimed; no interactive CTA button is present but the claim only requires heading and CTA copy."
+        },
+        {
+          "claimId": "flow-home-visit-SUCCESS",
+          "claim": "Flow \"Public Home Page Visit\" success: Welcome page rendered with nav links to auth routes",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/layouts/public-layout.tsx",
+              "lineNumber": 14,
+              "snippet": "<Link to=\"/auth/login\">...</Link>\n<Link to=\"/auth/signup\">...</Link>",
+              "confidence": 0.97
+            },
+            {
+              "file": "app/routes.ts",
+              "lineNumber": 10,
+              "snippet": "route(\"login\", \"routes/auth/login.tsx\"),\nroute(\"signup\", \"routes/auth/signup.tsx\")",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The welcome page is served under the public layout that includes nav links pointing to /auth/login and /auth/signup, both of which are registered auth routes in routes.ts."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-002",
+        "route": "POST /auth/signup",
+        "domain": "User Signup",
+        "component": "app/routes/auth/signup.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Render signup form inside auth layout (email, password >= 8 chars)",
+          "Extract email and password from FormData",
+          "Call supabase.auth.signUp() with emailRedirectTo pointing to /auth/callback",
+          "On error, return 400 with error message displayed inline",
+          "On success, redirect to /auth/verify-email with session cookies set"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-signup-STEP-001",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Signup\" step 1: Render signup form inside auth layout (email, password >= 8 chars)",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-STEP-002",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Signup\" step 2: Extract email and password from FormData",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-STEP-003",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Signup\" step 3: Call supabase.auth.signUp() with emailRedirectTo pointing to /auth/callback",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-STEP-004",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Signup\" step 4: On error, return 400 with error message displayed inline",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-STEP-005",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Signup\" step 5: On success, redirect to /auth/verify-email with session cookies set",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-SUCCESS",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Signup\" success: Supabase user record created, verification email dispatched, user redirected to verify-email page",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-ERR-001",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Signup\" error path: Duplicate email returns Supabase error displayed as inline error",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-ERR-002",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Signup\" error path: Invalid email caught by HTML5 required/type=email validation",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-ERR-003",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Signup\" error path: Password under 8 chars caught by minLength HTML5 attribute",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-GAP-001",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        },
+        {
+          "id": "flow-signup-GAP-002",
+          "section": "User Signup",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: No password confirmation field on signup or reset-password forms, creating risk of typo-locked accounts",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-signup-ERR-001",
+          "claim": "Flow \"User Signup\" error path: Duplicate email returns Supabase error displayed as inline error",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 36,
+              "snippet": "if (error) {\n  return data({ error: error.message }, { status: 400 });\n}",
+              "confidence": 0.9
+            },
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 49,
+              "snippet": "{actionData?.error && (\n  <div className=\"rounded-md bg-destructive/10 p-3 text-sm text-destructive\">\n    {actionData.error}\n  </div>\n)}",
+              "confidence": 0.9
+            }
+          ],
+          "reasoning": "All Supabase errors including duplicate email are caught generically and the error message is rendered inline; no special-casing is needed since Supabase returns a descriptive error string for duplicate accounts."
+        },
+        {
+          "claimId": "flow-signup-ERR-002",
+          "claim": "Flow \"User Signup\" error path: Invalid email caught by HTML5 required/type=email validation",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 55,
+              "snippet": "<Input id=\"email\" name=\"email\" type=\"email\" required autoComplete=\"email\" />",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The email input has type=\"email\" and required, which triggers native HTML5 browser validation before the form submits, catching invalid email formats."
+        },
+        {
+          "claimId": "flow-signup-ERR-003",
+          "claim": "Flow \"User Signup\" error path: Password under 8 chars caught by minLength HTML5 attribute",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 63,
+              "snippet": "<Input id=\"password\" name=\"password\" type=\"password\" required minLength={8} autoComplete=\"new-password\" />",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The password input has minLength={8} which maps to the HTML minlength attribute, causing the browser to reject submission if the value is fewer than 8 characters."
+        },
+        {
+          "claimId": "flow-signup-GAP-001",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() {\n  return createBrowserClient(\n    import.meta.env.VITE_SUPABASE_URL!,",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "The browser client is defined in app/lib/supabase/client.ts but no import of ~/lib/supabase/client appears in any of the provided route or component files; only the server client is imported across all routes, confirming this gap exists."
+        },
+        {
+          "claimId": "flow-signup-GAP-002",
+          "claim": "Gap: No password confirmation field on signup or reset-password forms, creating risk of typo-locked accounts",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 55,
+              "snippet": "<div className=\"space-y-2\">\n  <Label htmlFor=\"password\">Password</Label>\n  <Input id=\"password\" name=\"password\" type=\"password\" required minLength={8} />",
+              "confidence": 1
+            },
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 44,
+              "snippet": "<div className=\"space-y-2\">\n  <Label htmlFor=\"password\">New password</Label>\n  <Input id=\"password\" name=\"password\" type=\"password\" required minLength={8} />",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "Neither the signup form nor the reset-password form includes a confirm-password field, confirming the documented gap where a typo could lock a user out of their account."
+        },
+        {
+          "claimId": "flow-signup-STEP-001",
+          "claim": "Flow \"User Signup\" step 1: Render signup form inside auth layout (email, password >= 8 chars)",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/layouts/auth-layout.tsx",
+              "lineNumber": 5,
+              "snippet": "export default function AuthLayout() {\n  return (\n    <div className=\"flex min-h-screen items-center justify-center bg-muted/50 px-4\">",
+              "confidence": 0.95
+            },
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 67,
+              "snippet": "<Input id=\"password\" name=\"password\" type=\"password\" required minLength={8} autoComplete=\"new-password\" />",
+              "confidence": 0.98
+            }
+          ],
+          "reasoning": "The auth layout renders child routes via <Outlet />, and the signup form renders email (type=email, required) and password (minLength={8}, required) inputs inside a Card component served through that layout."
+        },
+        {
+          "claimId": "flow-signup-STEP-002",
+          "claim": "Flow \"User Signup\" step 2: Extract email and password from FormData",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 24,
+              "snippet": "const formData = await request.formData();\nconst email = formData.get(\"email\") as string;\nconst password = formData.get(\"password\") as string;",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The action reads FormData directly from the request and extracts both email and password fields by name."
+        },
+        {
+          "claimId": "flow-signup-STEP-003",
+          "claim": "Flow \"User Signup\" step 3: Call supabase.auth.signUp() with emailRedirectTo pointing to /auth/callback",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 28,
+              "snippet": "const { error } = await supabase.auth.signUp({\n  email,\n  password,\n  options: {\n    emailRedirectTo: `${new URL(request.url).origin}/auth/callback`,\n  },\n});",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "supabase.auth.signUp() is called with emailRedirectTo dynamically constructed as origin + /auth/callback, exactly matching the claim."
+        },
+        {
+          "claimId": "flow-signup-STEP-004",
+          "claim": "Flow \"User Signup\" step 4: On error, return 400 with error message displayed inline",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 36,
+              "snippet": "if (error) {\n  return data({ error: error.message }, { status: 400 });\n}",
+              "confidence": 1
+            },
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 49,
+              "snippet": "{actionData?.error && (\n  <div className=\"rounded-md bg-destructive/10 p-3 text-sm text-destructive\">\n    {actionData.error}\n  </div>\n)}",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "On error the action returns HTTP 400 with error.message, and the component renders it inline inside a styled div above the form fields."
+        },
+        {
+          "claimId": "flow-signup-STEP-005",
+          "claim": "Flow \"User Signup\" step 5: On success, redirect to /auth/verify-email with session cookies set",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 40,
+              "snippet": "return redirect(\"/auth/verify-email\", { headers });",
+              "confidence": 1
+            },
+            {
+              "file": "app/lib/supabase/server.ts",
+              "lineNumber": 19,
+              "snippet": "setAll(cookiesToSet) {\n  for (const { name, value, options } of cookiesToSet) {\n    headers.append(\"Set-Cookie\", serializeCookieHeader(name, value, options));\n  }\n}",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "On success the action redirects to /auth/verify-email passing the headers object that carries serialized Set-Cookie entries populated by Supabase's setAll cookie handler."
+        },
+        {
+          "claimId": "flow-signup-SUCCESS",
+          "claim": "Flow \"User Signup\" success: Supabase user record created, verification email dispatched, user redirected to verify-email page",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 28,
+              "snippet": "const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${new URL(request.url).origin}/auth/callback` } });",
+              "confidence": 0.9
+            },
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 40,
+              "snippet": "return redirect(\"/auth/verify-email\", { headers });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "signUp() delegates user record creation and verification email dispatch to Supabase (with a valid emailRedirectTo), and on success the user is redirected to the verify-email page - all three success outcomes are covered."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-003",
+        "route": "Redirect from POST /auth/signup on success",
+        "domain": "Email Verification Prompt",
+        "component": "app/routes/auth/verify-email.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Render static card with instructions to check email and link back to login"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-verify-email-STEP-001",
+          "section": "Email Verification Prompt",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Email Verification Prompt\" step 1: Render static card with instructions to check email and link back to login",
+          "testable": true
+        },
+        {
+          "id": "flow-verify-email-SUCCESS",
+          "section": "Email Verification Prompt",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Email Verification Prompt\" success: User sees instructions and follows email link to complete verification",
+          "testable": true
+        },
+        {
+          "id": "flow-verify-email-ERR-001",
+          "section": "Email Verification Prompt",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Email Verification Prompt\" error path: No server-side resend mechanism - user must re-attempt signup to get a new email",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-verify-email-ERR-001",
+          "claim": "Flow \"Email Verification Prompt\" error path: No server-side resend mechanism - user must re-attempt signup to get a new email",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/verify-email.tsx",
+              "lineNumber": 20,
+              "snippet": "<p className=\"text-sm text-muted-foreground\">\n  Didn't receive the email? Check your spam folder or try signing up\n  again.\n</p>",
+              "confidence": 0.98
+            },
+            {
+              "file": "app/routes/auth/verify-email.tsx",
+              "lineNumber": 12,
+              "snippet": "export default function VerifyEmail() {",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "The verify-email route has no loader, no action, and no resend button or API call; the only recovery instruction is to 'try signing up again', confirming the absence of any server-side resend mechanism exactly as claimed."
+        },
+        {
+          "claimId": "flow-verify-email-STEP-001",
+          "claim": "Flow \"Email Verification Prompt\" step 1: Render static card with instructions to check email and link back to login",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/verify-email.tsx",
+              "lineNumber": 12,
+              "snippet": "<Card className=\"w-full max-w-md\">\n  <CardHeader>\n    <CardTitle>Check your email</CardTitle>",
+              "confidence": 0.99
+            },
+            {
+              "file": "app/routes/auth/verify-email.tsx",
+              "lineNumber": 25,
+              "snippet": "<Link to=\"/auth/login\" className=\"text-sm text-primary hover:underline\">\n  Back to sign in\n</Link>",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The route renders a purely static Card with a title, description instructing the user to check their email, and a Link component pointing back to /auth/login. No loader, no action, no dynamic state."
+        },
+        {
+          "claimId": "flow-verify-email-SUCCESS",
+          "claim": "Flow \"Email Verification Prompt\" success: User sees instructions and follows email link to complete verification",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 22,
+              "snippet": "options: {\n  emailRedirectTo: `${new URL(request.url).origin}/auth/callback`,\n},",
+              "confidence": 0.97
+            },
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 12,
+              "snippet": "if (code) {\n  await supabase.auth.exchangeCodeForSession(code);\n}\nreturn redirect(\"/dashboard\", { headers });",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The signup action configures Supabase to redirect the email link to /auth/callback, which exchanges the code for a session and redirects to /dashboard - fully implementing the success path where a user follows the email link to complete verification."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-004",
+        "route": "GET /auth/callback?code=<code>",
+        "domain": "Auth Code Callback (PKCE Session Exchange)",
+        "component": "app/routes/auth/callback.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Extract code query parameter from URL",
+          "Call supabase.auth.exchangeCodeForSession(code) to establish session",
+          "Redirect to /dashboard with Set-Cookie headers containing the session"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-oauth-callback-STEP-001",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Auth Code Callback (PKCE Session Exchange)\" step 1: Extract code query parameter from URL",
+          "testable": true
+        },
+        {
+          "id": "flow-oauth-callback-STEP-002",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Auth Code Callback (PKCE Session Exchange)\" step 2: Call supabase.auth.exchangeCodeForSession(code) to establish session",
+          "testable": true
+        },
+        {
+          "id": "flow-oauth-callback-STEP-003",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Auth Code Callback (PKCE Session Exchange)\" step 3: Redirect to /dashboard with Set-Cookie headers containing the session",
+          "testable": true
+        },
+        {
+          "id": "flow-oauth-callback-SUCCESS",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Auth Code Callback (PKCE Session Exchange)\" success: Session cookie set, user lands on dashboard",
+          "testable": true
+        },
+        {
+          "id": "flow-oauth-callback-ERR-001",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Auth Code Callback (PKCE Session Exchange)\" error path: If no code param is present, redirect to /dashboard still occurs (no error handling)",
+          "testable": true
+        },
+        {
+          "id": "flow-oauth-callback-GAP-001",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: No error handling when /auth/callback receives no code parameter",
+          "testable": true
+        },
+        {
+          "id": "flow-oauth-callback-GAP-002",
+          "section": "Auth Code Callback (PKCE Session Exchange)",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-oauth-callback-ERR-001",
+          "claim": "Flow \"Auth Code Callback (PKCE Session Exchange)\" error path: If no code param is present, redirect to /dashboard still occurs (no error handling)",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 9,
+              "snippet": "if (code) {\n  await supabase.auth.exchangeCodeForSession(code);\n}\nreturn redirect(\"/dashboard\", { headers });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "When code is null the if-block is skipped entirely and the unconditional redirect('/dashboard') executes regardless, exactly matching the described behavior."
+        },
+        {
+          "claimId": "flow-oauth-callback-GAP-001",
+          "claim": "Gap: No error handling when /auth/callback receives no code parameter",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 9,
+              "snippet": "if (code) {\n  await supabase.auth.exchangeCodeForSession(code);\n}\nreturn redirect(\"/dashboard\", { headers });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The code has no else branch, no error return, and no 4xx response when code is absent - it silently redirects to /dashboard, confirming the documented gap."
+        },
+        {
+          "claimId": "flow-oauth-callback-GAP-002",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() {\n  return createBrowserClient(...)\n}",
+              "confidence": 0.9
+            }
+          ],
+          "reasoning": "client.ts exports getSupabaseBrowserClient but a search across all provided route and component files (callback.tsx, login.tsx, signup.tsx, dashboard/_index.tsx, root.tsx) finds zero imports of ~/lib/supabase/client, confirming the gap."
+        },
+        {
+          "claimId": "flow-oauth-callback-STEP-001",
+          "claim": "Flow \"Auth Code Callback (PKCE Session Exchange)\" step 1: Extract code query parameter from URL",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 7,
+              "snippet": "const url = new URL(request.url);\nconst code = url.searchParams.get(\"code\");",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The loader explicitly constructs a URL object from the request and extracts the 'code' query parameter via searchParams.get."
+        },
+        {
+          "claimId": "flow-oauth-callback-STEP-002",
+          "claim": "Flow \"Auth Code Callback (PKCE Session Exchange)\" step 2: Call supabase.auth.exchangeCodeForSession(code) to establish session",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 10,
+              "snippet": "if (code) {\n  await supabase.auth.exchangeCodeForSession(code);\n}",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "exchangeCodeForSession(code) is called exactly as described, guarded by an if(code) check, using the server Supabase client."
+        },
+        {
+          "claimId": "flow-oauth-callback-STEP-003",
+          "claim": "Flow \"Auth Code Callback (PKCE Session Exchange)\" step 3: Redirect to /dashboard with Set-Cookie headers containing the session",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 13,
+              "snippet": "return redirect(\"/dashboard\", { headers });",
+              "confidence": 1
+            },
+            {
+              "file": "app/lib/supabase/server.ts",
+              "lineNumber": 22,
+              "snippet": "headers.append(\n  \"Set-Cookie\",\n  serializeCookieHeader(name, value, options),\n);",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "The loader redirects to /dashboard passing the headers object, which is populated with Set-Cookie entries by the server client's setAll cookie handler."
+        },
+        {
+          "claimId": "flow-oauth-callback-SUCCESS",
+          "claim": "Flow \"Auth Code Callback (PKCE Session Exchange)\" success: Session cookie set, user lands on dashboard",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/callback.tsx",
+              "lineNumber": 13,
+              "snippet": "return redirect(\"/dashboard\", { headers });",
+              "confidence": 0.95
+            },
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 12,
+              "snippet": "const { data: { user } } = await supabase.auth.getUser();\nif (!user) { return redirect(\"/auth/login\", { headers }); }",
+              "confidence": 0.9
+            }
+          ],
+          "reasoning": "The callback sets session cookies via headers and redirects to /dashboard; the dashboard loader verifies the session via getUser(), confirming the user lands there successfully when the cookie is valid."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-005",
+        "route": "POST /auth/login",
+        "domain": "User Login",
+        "component": "app/routes/auth/login.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Render login form with email, password fields and forgot-password link",
+          "Extract email and password from FormData",
+          "Call supabase.auth.signInWithPassword({ email, password })",
+          "On error, return 400 with Supabase error message displayed inline",
+          "On success, redirect to /dashboard with session cookies in response headers"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-login-STEP-001",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Login\" step 1: Render login form with email, password fields and forgot-password link",
+          "testable": true
+        },
+        {
+          "id": "flow-login-STEP-002",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Login\" step 2: Extract email and password from FormData",
+          "testable": true
+        },
+        {
+          "id": "flow-login-STEP-003",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Login\" step 3: Call supabase.auth.signInWithPassword({ email, password })",
+          "testable": true
+        },
+        {
+          "id": "flow-login-STEP-004",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Login\" step 4: On error, return 400 with Supabase error message displayed inline",
+          "testable": true
+        },
+        {
+          "id": "flow-login-STEP-005",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Login\" step 5: On success, redirect to /dashboard with session cookies in response headers",
+          "testable": true
+        },
+        {
+          "id": "flow-login-SUCCESS",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Login\" success: Session established, user redirected to /dashboard",
+          "testable": true
+        },
+        {
+          "id": "flow-login-ERR-001",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Login\" error path: Invalid credentials returns Supabase error (displayed inline)",
+          "testable": true
+        },
+        {
+          "id": "flow-login-ERR-002",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Login\" error path: Invalid email format blocked by HTML5 type=email validation",
+          "testable": true
+        },
+        {
+          "id": "flow-login-GAP-001",
+          "section": "User Login",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-login-ERR-001",
+          "claim": "Flow \"User Login\" error path: Invalid credentials returns Supabase error (displayed inline)",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 30,
+              "snippet": "if (error) {\n  return data({ error: error.message }, { status: 400 });\n}",
+              "confidence": 0.97
+            },
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 46,
+              "snippet": "{actionData?.error && (\n  <div className=\"rounded-md bg-destructive/10 p-3 text-sm text-destructive\">\n    {actionData.error}\n  </div>\n)}",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "Any Supabase auth error (including invalid credentials) passes error.message through to the client and is displayed inline in the form without a page redirect."
+        },
+        {
+          "claimId": "flow-login-ERR-002",
+          "claim": "Flow \"User Login\" error path: Invalid email format blocked by HTML5 type=email validation",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 55,
+              "snippet": "<Input id=\"email\" name=\"email\" type=\"email\" required autoComplete=\"email\" />",
+              "confidence": 0.98
+            },
+            {
+              "file": "app/components/ui/input.tsx",
+              "lineNumber": 8,
+              "snippet": "const Input = ({ className, type, ...props }: React.ComponentProps<\"input\">) => {\n  return (\n    <input type={type} data-slot=\"input\" ... {...props} />",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The email field is rendered as a native <input type=\"email\">, which triggers browser-native HTML5 validation blocking submission on malformed email addresses before any server call is made."
+        },
+        {
+          "claimId": "flow-login-GAP-001",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() {\n  return createBrowserClient(\n    import.meta.env.VITE_SUPABASE_URL!,\n    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!,\n  );\n}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The browser Supabase client is defined in app/lib/supabase/client.ts but no import of ~/lib/supabase/client appears in any of the provided route or component files; all auth operations use the server client from ~/lib/supabase/server, confirming the gap as described."
+        },
+        {
+          "claimId": "flow-login-STEP-001",
+          "claim": "Flow \"User Login\" step 1: Render login form with email, password fields and forgot-password link",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 55,
+              "snippet": "<Input id=\"email\" name=\"email\" type=\"email\" required autoComplete=\"email\" />",
+              "confidence": 0.99
+            },
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 63,
+              "snippet": "<Link to=\"/auth/forgot-password\" className=\"text-sm text-muted-foreground hover:underline\">Forgot password?</Link>",
+              "confidence": 0.99
+            },
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 70,
+              "snippet": "<Input id=\"password\" name=\"password\" type=\"password\" required autoComplete=\"current-password\" />",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The Login component renders email and password inputs plus a forgot-password link to /auth/forgot-password, fully satisfying all three required UI elements."
+        },
+        {
+          "claimId": "flow-login-STEP-002",
+          "claim": "Flow \"User Login\" step 2: Extract email and password from FormData",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 24,
+              "snippet": "const formData = await request.formData();\nconst email = formData.get(\"email\") as string;\nconst password = formData.get(\"password\") as string;",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The action function reads FormData from the request and extracts both email and password by their field names, exactly as claimed."
+        },
+        {
+          "claimId": "flow-login-STEP-003",
+          "claim": "Flow \"User Login\" step 3: Call supabase.auth.signInWithPassword({ email, password })",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 28,
+              "snippet": "const { error } = await supabase.auth.signInWithPassword({ email, password });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The action calls supabase.auth.signInWithPassword with exactly the { email, password } object shape specified in the claim."
+        },
+        {
+          "claimId": "flow-login-STEP-004",
+          "claim": "Flow \"User Login\" step 4: On error, return 400 with Supabase error message displayed inline",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 30,
+              "snippet": "if (error) {\n  return data({ error: error.message }, { status: 400 });\n}",
+              "confidence": 0.99
+            },
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 46,
+              "snippet": "{actionData?.error && (\n  <div className=\"rounded-md bg-destructive/10 p-3 text-sm text-destructive\">\n    {actionData.error}\n  </div>\n)}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "On error the action returns HTTP 400 with error.message, and the component renders it inline inside a destructive-styled div using useActionData."
+        },
+        {
+          "claimId": "flow-login-STEP-005",
+          "claim": "Flow \"User Login\" step 5: On success, redirect to /dashboard with session cookies in response headers",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 33,
+              "snippet": "return redirect(\"/dashboard\", { headers });",
+              "confidence": 0.99
+            },
+            {
+              "file": "app/lib/supabase/server.ts",
+              "lineNumber": 20,
+              "snippet": "headers.append(\n  \"Set-Cookie\",\n  serializeCookieHeader(name, value, options),\n);",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "On success the action redirects to /dashboard passing the headers object which the Supabase server client populates with Set-Cookie headers via serializeCookieHeader, establishing the session."
+        },
+        {
+          "claimId": "flow-login-SUCCESS",
+          "claim": "Flow \"User Login\" success: Session established, user redirected to /dashboard",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/login.tsx",
+              "lineNumber": 33,
+              "snippet": "return redirect(\"/dashboard\", { headers });",
+              "confidence": 0.99
+            },
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 14,
+              "snippet": "const { data: { user } } = await supabase.auth.getUser();\nif (!user) {\n  return redirect(\"/auth/login\", { headers });\n}",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "Login success redirects to /dashboard; the dashboard loader validates the session via supabase.auth.getUser() and serves the page only when a valid user is found, confirming session establishment."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-006",
+        "route": "POST /auth/forgot-password",
+        "domain": "Forgot Password",
+        "component": "app/routes/auth/forgot-password.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Render forgot-password form with email input",
+          "Extract email from FormData",
+          "Call supabase.auth.resetPasswordForEmail(email, { redirectTo: origin + /auth/reset-password })",
+          "On error, return 400 with error message",
+          "On success, show inline success message prompting user to check email"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-forgot-password-STEP-001",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Forgot Password\" step 1: Render forgot-password form with email input",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-STEP-002",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Forgot Password\" step 2: Extract email from FormData",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-STEP-003",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Forgot Password\" step 3: Call supabase.auth.resetPasswordForEmail(email, { redirectTo: origin + /auth/reset-password })",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-STEP-004",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Forgot Password\" step 4: On error, return 400 with error message",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-STEP-005",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Forgot Password\" step 5: On success, show inline success message prompting user to check email",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-SUCCESS",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Forgot Password\" success: Supabase dispatches password-reset email; success banner shown to user",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-ERR-001",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Forgot Password\" error path: Supabase error (e.g. rate limit, unregistered email) displayed inline",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-ERR-002",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Forgot Password\" error path: Invalid email format caught by HTML5 validation before submission",
+          "testable": true
+        },
+        {
+          "id": "flow-forgot-password-GAP-001",
+          "section": "Forgot Password",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-forgot-password-ERR-001",
+          "claim": "Flow \"Forgot Password\" error path: Supabase error (e.g. rate limit, unregistered email) displayed inline",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 33,
+              "snippet": "{actionData?.error && (\n  <div className=\"rounded-md bg-destructive/10 p-3 text-sm text-destructive\">\n    {actionData.error}\n  </div>\n)}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The error message from Supabase (rate limit, unregistered email, etc.) is stored in actionData.error and rendered inline in a destructive-styled div."
+        },
+        {
+          "claimId": "flow-forgot-password-ERR-002",
+          "claim": "Flow \"Forgot Password\" error path: Invalid email format caught by HTML5 validation before submission",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 46,
+              "snippet": "<Input id=\"email\" name=\"email\" type=\"email\" required autoComplete=\"email\" />",
+              "confidence": 0.95
+            },
+            {
+              "file": "app/components/ui/input.tsx",
+              "lineNumber": 7,
+              "snippet": "const Input = ({ className, type, ...props }: React.ComponentProps<\"input\">) => {\n  return (\n    <input type={type} ... {...props} />",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "The Input component is a thin wrapper around a native <input> that passes type and all props through; with type='email' and required set, the browser's built-in HTML5 validation fires before submission."
+        },
+        {
+          "claimId": "flow-forgot-password-GAP-001",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() {\n  return createBrowserClient(...);",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The browser client is defined in client.ts but none of the visible route or component files (forgot-password.tsx, login.tsx, signup.tsx, root.tsx, auth-layout.tsx, input.tsx) import from '~/lib/supabase/client', confirming the gap."
+        },
+        {
+          "claimId": "flow-forgot-password-STEP-001",
+          "claim": "Flow \"Forgot Password\" step 1: Render forgot-password form with email input",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 46,
+              "snippet": "<Input id=\"email\" name=\"email\" type=\"email\" required autoComplete=\"email\" />",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The ForgotPassword component renders a Card-wrapped Form containing a labeled email input with type='email' and required attributes, fully satisfying this step."
+        },
+        {
+          "claimId": "flow-forgot-password-STEP-002",
+          "claim": "Flow \"Forgot Password\" step 2: Extract email from FormData",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 18,
+              "snippet": "const formData = await request.formData();\nconst email = formData.get(\"email\") as string;",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The action reads FormData from the request and extracts the email field via formData.get('email'), exactly as claimed."
+        },
+        {
+          "claimId": "flow-forgot-password-STEP-003",
+          "claim": "Flow \"Forgot Password\" step 3: Call supabase.auth.resetPasswordForEmail(email, { redirectTo: origin + /auth/reset-password })",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 22,
+              "snippet": "const { error } = await supabase.auth.resetPasswordForEmail(email, {\n  redirectTo: `${url.origin}/auth/reset-password`,\n});",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The action calls resetPasswordForEmail with the extracted email and a redirectTo of url.origin + '/auth/reset-password', matching the claim exactly."
+        },
+        {
+          "claimId": "flow-forgot-password-STEP-004",
+          "claim": "Flow \"Forgot Password\" step 4: On error, return 400 with error message",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 27,
+              "snippet": "if (error) {\n  return data({ error: error.message, success: false }, { status: 400 });\n}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "On Supabase error, the action returns a 400 response containing the error message string, fully satisfying this step."
+        },
+        {
+          "claimId": "flow-forgot-password-STEP-005",
+          "claim": "Flow \"Forgot Password\" step 5: On success, show inline success message prompting user to check email",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 38,
+              "snippet": "{actionData?.success && (\n  <div className=\"rounded-md bg-accent/10 p-3 text-sm text-accent-foreground\">\n    Check your email for a password reset link.\n  </div>\n)}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "When actionData.success is true, an inline message telling the user to check their email is rendered in the card content area."
+        },
+        {
+          "claimId": "flow-forgot-password-SUCCESS",
+          "claim": "Flow \"Forgot Password\" success: Supabase dispatches password-reset email; success banner shown to user",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 22,
+              "snippet": "const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${url.origin}/auth/reset-password` });",
+              "confidence": 0.95
+            },
+            {
+              "file": "app/routes/auth/forgot-password.tsx",
+              "lineNumber": 38,
+              "snippet": "{actionData?.success && (\n  <div ...>Check your email for a password reset link.</div>\n)}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The code correctly invokes the Supabase resetPasswordForEmail API (which triggers the email dispatch on Supabase's side) and conditionally renders the success banner when no error is returned."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-007",
+        "route": "POST /auth/reset-password (after arriving via email link to GET /auth/reset-password)",
+        "domain": "Reset Password",
+        "component": "app/routes/auth/reset-password.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Render reset-password form with new password input (minLength 8)",
+          "Extract new password from FormData",
+          "Call supabase.auth.updateUser({ password }) using session established by the reset link",
+          "On error, return 400 with error message displayed inline",
+          "On success, redirect to /dashboard"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-reset-password-STEP-001",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Reset Password\" step 1: Render reset-password form with new password input (minLength 8)",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-STEP-002",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Reset Password\" step 2: Extract new password from FormData",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-STEP-003",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Reset Password\" step 3: Call supabase.auth.updateUser({ password }) using session established by the reset link",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-STEP-004",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Reset Password\" step 4: On error, return 400 with error message displayed inline",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-STEP-005",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Reset Password\" step 5: On success, redirect to /dashboard",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-SUCCESS",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Reset Password\" success: Password updated in Supabase Auth, user redirected to dashboard",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-ERR-001",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Reset Password\" error path: Expired or invalid token causes Supabase error displayed inline",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-ERR-002",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Reset Password\" error path: Password under 8 chars caught by HTML5 minLength",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-GAP-001",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: No loader on /auth/reset-password to validate that the user arrived via a valid reset link before showing the password form",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-GAP-002",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-GAP-003",
+          "section": "Reset Password",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: No password confirmation field on signup or reset-password forms, creating risk of typo-locked accounts",
+          "testable": true
+        },
+        {
+          "id": "flow-reset-password-GAP-004",
+          "section": "Reset Password",
+          "category": "security",
+          "severity": "high",
+          "text": "Gap: /auth/reset-password has no guard to prevent authenticated users from accessing it",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-reset-password-ERR-001",
+          "claim": "Flow \"Reset Password\" error path: Expired or invalid token causes Supabase error displayed inline",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 28,
+              "snippet": "return data({ error: error.message }, { status: 400 });",
+              "confidence": 0.85
+            }
+          ],
+          "reasoning": "When updateUser is called with an expired or invalid session, Supabase returns an error object whose message is passed back to the client and rendered inline; the existing error-handling path covers this case."
+        },
+        {
+          "claimId": "flow-reset-password-ERR-002",
+          "claim": "Flow \"Reset Password\" error path: Password under 8 chars caught by HTML5 minLength",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 56,
+              "snippet": "<Input ... type=\"password\" required minLength={8} autoComplete=\"new-password\" />",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The minLength={8} prop renders as the HTML5 minlength=\"8\" attribute, which browsers enforce client-side before the form is submitted."
+        },
+        {
+          "claimId": "flow-reset-password-GAP-001",
+          "claim": "Gap: No loader on /auth/reset-password to validate that the user arrived via a valid reset link before showing the password form",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 20,
+              "snippet": "export async function action({ request }: Route.ActionArgs) {",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The file exports only an action and a default component - there is no loader function, so no server-side validation that the user arrived via a valid reset link before the form is shown."
+        },
+        {
+          "claimId": "flow-reset-password-GAP-002",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() { return createBrowserClient(...); }",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "All provided routes and components import exclusively from ~/lib/supabase/server; ~/lib/supabase/client is defined but has no visible import in any of the supplied files."
+        },
+        {
+          "claimId": "flow-reset-password-GAP-003",
+          "claim": "Gap: No password confirmation field on signup or reset-password forms, creating risk of typo-locked accounts",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 51,
+              "snippet": "<div className=\"space-y-2\"><Label htmlFor=\"password\">New password</Label><Input id=\"password\" name=\"password\" ... /></div>",
+              "confidence": 1
+            },
+            {
+              "file": "app/routes/auth/signup.tsx",
+              "lineNumber": 60,
+              "snippet": "<Input id=\"password\" name=\"password\" type=\"password\" required minLength={8} autoComplete=\"new-password\" />",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "Neither the reset-password form nor the signup form contains a second password confirmation input field; the gap is confirmed in both routes."
+        },
+        {
+          "claimId": "flow-reset-password-GAP-004",
+          "claim": "Gap: /auth/reset-password has no guard to prevent authenticated users from accessing it",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 20,
+              "snippet": "export async function action({ request }: Route.ActionArgs) {",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "There is no loader in reset-password.tsx, so there is no guard that checks whether the requesting user is already authenticated before rendering the password-reset form."
+        },
+        {
+          "claimId": "flow-reset-password-STEP-001",
+          "claim": "Flow \"Reset Password\" step 1: Render reset-password form with new password input (minLength 8)",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 56,
+              "snippet": "<Input id=\"password\" name=\"password\" type=\"password\" required minLength={8} autoComplete=\"new-password\" />",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The reset-password form renders a password input with minLength={8} and required, which maps directly to the HTML5 minlength attribute."
+        },
+        {
+          "claimId": "flow-reset-password-STEP-002",
+          "claim": "Flow \"Reset Password\" step 2: Extract new password from FormData",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 24,
+              "snippet": "const password = formData.get(\"password\") as string;",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The action extracts the password field directly from FormData via formData.get(\"password\")."
+        },
+        {
+          "claimId": "flow-reset-password-STEP-003",
+          "claim": "Flow \"Reset Password\" step 3: Call supabase.auth.updateUser({ password }) using session established by the reset link",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 26,
+              "snippet": "const { error } = await supabase.auth.updateUser({ password });",
+              "confidence": 0.9
+            },
+            {
+              "file": "app/lib/supabase/server.ts",
+              "lineNumber": 13,
+              "snippet": "getAll() { return parseCookieHeader(request.headers.get(\"Cookie\") ?? \"\") ... }",
+              "confidence": 0.85
+            }
+          ],
+          "reasoning": "supabase.auth.updateUser({ password }) is called using a server client that reads the session from cookies; the session is established upstream by the callback route's exchangeCodeForSession call."
+        },
+        {
+          "claimId": "flow-reset-password-STEP-004",
+          "claim": "Flow \"Reset Password\" step 4: On error, return 400 with error message displayed inline",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 28,
+              "snippet": "return data({ error: error.message }, { status: 400 });",
+              "confidence": 1
+            },
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 44,
+              "snippet": "{actionData?.error && (<div className=\"rounded-md bg-destructive/10 p-3 text-sm text-destructive\">{actionData.error}</div>)}",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "On error, the action returns status 400 with the error message, and the component renders it inline inside a styled div."
+        },
+        {
+          "claimId": "flow-reset-password-STEP-005",
+          "claim": "Flow \"Reset Password\" step 5: On success, redirect to /dashboard",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 32,
+              "snippet": "return redirect(\"/dashboard\", { headers });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "On successful updateUser, the action redirects to /dashboard with the updated session headers."
+        },
+        {
+          "claimId": "flow-reset-password-SUCCESS",
+          "claim": "Flow \"Reset Password\" success: Password updated in Supabase Auth, user redirected to dashboard",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 26,
+              "snippet": "const { error } = await supabase.auth.updateUser({ password });",
+              "confidence": 1
+            },
+            {
+              "file": "app/routes/auth/reset-password.tsx",
+              "lineNumber": 32,
+              "snippet": "return redirect(\"/dashboard\", { headers });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The action updates the password in Supabase Auth and, on success, redirects the user to /dashboard, satisfying both parts of the success condition."
+        }
+      ],
+      "bugs": []
+    },
+    {
+      "requirement": {
+        "id": "FLOW-008",
+        "route": "GET /dashboard",
+        "domain": "Authenticated Dashboard Access",
+        "component": "app/routes/dashboard/_index.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "Server loader calls supabase.auth.getUser() using session cookies",
+          "If no user in session, redirect to /auth/login with refreshed headers",
+          "Return user email to the component",
+          "Render dashboard shell: header with app name + sign out button, main with welcome message"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-dashboard-access-STEP-001",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Authenticated Dashboard Access\" step 1: Server loader calls supabase.auth.getUser() using session cookies",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-STEP-002",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"Authenticated Dashboard Access\" step 2: If no user in session, redirect to /auth/login with refreshed headers",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-STEP-003",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Authenticated Dashboard Access\" step 3: Return user email to the component",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-STEP-004",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Authenticated Dashboard Access\" step 4: Render dashboard shell: header with app name + sign out button, main with welcome message",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-SUCCESS",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Authenticated Dashboard Access\" success: Authenticated user sees dashboard with their email displayed",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-ERR-001",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"Authenticated Dashboard Access\" error path: Unauthenticated request redirected to /auth/login",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-GAP-001",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        },
+        {
+          "id": "flow-dashboard-access-GAP-002",
+          "section": "Authenticated Dashboard Access",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: Dashboard has no application content - it is a placeholder with 'Start building your application here' copy",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-dashboard-access-ERR-001",
+          "claim": "Flow \"Authenticated Dashboard Access\" error path: Unauthenticated request redirected to /auth/login",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 14,
+              "snippet": "if (!user) {\n  return redirect(\"/auth/login\", { headers });\n}",
+              "confidence": 0.99
+            },
+            {
+              "file": "e2e/dashboard.spec.ts",
+              "lineNumber": 13,
+              "snippet": "await page.goto(\"/dashboard\");\nawait expect(page).toHaveURL(/\\/auth\\/login/);",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The loader explicitly redirects unauthenticated requests to /auth/login, and an E2E test confirms this behaviour."
+        },
+        {
+          "claimId": "flow-dashboard-access-GAP-001",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() {\n  return createBrowserClient(",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "getSupabaseBrowserClient is defined in client.ts but no import of ~/lib/supabase/client appears in any of the provided route or component files, confirming the gap."
+        },
+        {
+          "claimId": "flow-dashboard-access-GAP-002",
+          "claim": "Gap: Dashboard has no application content - it is a placeholder with 'Start building your application here' copy",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 42,
+              "snippet": "<p className=\"mt-2 text-muted-foreground\">\n  This is your dashboard. Start building your application here.\n</p>",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The dashboard main section contains only a welcome heading and a static placeholder paragraph - there is no application-specific content beyond the shell."
+        },
+        {
+          "claimId": "flow-dashboard-access-STEP-001",
+          "claim": "Flow \"Authenticated Dashboard Access\" step 1: Server loader calls supabase.auth.getUser() using session cookies",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 7,
+              "snippet": "const { supabase, headers } = createSupabaseServerClient(request);\n\nconst {\n  data: { user },\n} = await supabase.auth.getUser();",
+              "confidence": 0.98
+            },
+            {
+              "file": "app/lib/supabase/server.ts",
+              "lineNumber": 13,
+              "snippet": "getAll() {\n  return parseCookieHeader(request.headers.get(\"Cookie\") ?? \"\")",
+              "confidence": 0.97
+            }
+          ],
+          "reasoning": "The loader calls supabase.auth.getUser() via a server client that reads session state from the Cookie request header using parseCookieHeader."
+        },
+        {
+          "claimId": "flow-dashboard-access-STEP-002",
+          "claim": "Flow \"Authenticated Dashboard Access\" step 2: If no user in session, redirect to /auth/login with refreshed headers",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 14,
+              "snippet": "if (!user) {\n  return redirect(\"/auth/login\", { headers });\n}",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "When getUser() returns no user, the loader redirects to /auth/login and passes the refreshed headers (which carry Set-Cookie entries from the Supabase SSR client)."
+        },
+        {
+          "claimId": "flow-dashboard-access-STEP-003",
+          "claim": "Flow \"Authenticated Dashboard Access\" step 3: Return user email to the component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 18,
+              "snippet": "return { email: user.email };",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The loader returns an object with the user's email, which is consumed by the component via useLoaderData."
+        },
+        {
+          "claimId": "flow-dashboard-access-STEP-004",
+          "claim": "Flow \"Authenticated Dashboard Access\" step 4: Render dashboard shell: header with app name + sign out button, main with welcome message",
+          "verdict": "PARTIAL",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 31,
+              "snippet": "<h1 className=\"text-lg font-semibold\">Dashboard</h1>",
+              "confidence": 0.9
+            },
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 33,
+              "snippet": "<Button type=\"submit\" variant=\"outline\" size=\"sm\">\n  Sign out\n</Button>",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The header contains a sign-out button and a main section with a welcome message, but the header title is 'Dashboard' rather than the application name ('SaaS Starter' as seen in auth-layout.tsx), so the 'app name' aspect of the claim does not fully match."
+        },
+        {
+          "claimId": "flow-dashboard-access-SUCCESS",
+          "claim": "Flow \"Authenticated Dashboard Access\" success: Authenticated user sees dashboard with their email displayed",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 22,
+              "snippet": "const { email } = useLoaderData<typeof loader>();",
+              "confidence": 0.98
+            },
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 40,
+              "snippet": "<h2 className=\"text-2xl font-bold\">Welcome, {email}</h2>",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "An authenticated user's email is loaded from the server and rendered in the dashboard's welcome heading, fully satisfying this success condition."
+        }
+      ],
+      "bugs": [
+        {
+          "claimId": "flow-dashboard-access-STEP-004",
+          "claim": "Flow \"Authenticated Dashboard Access\" step 4: Render dashboard shell: header with app name + sign out button, main with welcome message",
+          "verdict": "PARTIAL",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 31,
+              "snippet": "<h1 className=\"text-lg font-semibold\">Dashboard</h1>",
+              "confidence": 0.9
+            },
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 33,
+              "snippet": "<Button type=\"submit\" variant=\"outline\" size=\"sm\">\n  Sign out\n</Button>",
+              "confidence": 0.99
+            }
+          ],
+          "reasoning": "The header contains a sign-out button and a main section with a welcome message, but the header title is 'Dashboard' rather than the application name ('SaaS Starter' as seen in auth-layout.tsx), so the 'app name' aspect of the claim does not fully match."
+        }
+      ]
+    },
+    {
+      "requirement": {
+        "id": "FLOW-009",
+        "route": "POST /dashboard (form submission from Sign out button)",
+        "domain": "User Logout",
+        "component": "app/routes/dashboard/_index.tsx",
+        "roles": [],
+        "tables": [],
+        "behaviors": [
+          "User clicks Sign out button which submits a POST form",
+          "Server action calls supabase.auth.signOut() to invalidate session",
+          "Redirect to /auth/login with cleared session cookies"
+        ],
+        "scaffoldingFlags": []
+      },
+      "claims": [
+        {
+          "id": "flow-logout-STEP-001",
+          "section": "User Logout",
+          "category": "functionality",
+          "severity": "medium",
+          "text": "Flow \"User Logout\" step 1: User clicks Sign out button which submits a POST form",
+          "testable": true
+        },
+        {
+          "id": "flow-logout-STEP-002",
+          "section": "User Logout",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Logout\" step 2: Server action calls supabase.auth.signOut() to invalidate session",
+          "testable": true
+        },
+        {
+          "id": "flow-logout-STEP-003",
+          "section": "User Logout",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Logout\" step 3: Redirect to /auth/login with cleared session cookies",
+          "testable": true
+        },
+        {
+          "id": "flow-logout-SUCCESS",
+          "section": "User Logout",
+          "category": "functionality",
+          "severity": "critical",
+          "text": "Flow \"User Logout\" success: Session invalidated, user redirected to login page",
+          "testable": true
+        },
+        {
+          "id": "flow-logout-GAP-001",
+          "section": "User Logout",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "testable": true
+        },
+        {
+          "id": "flow-logout-GAP-002",
+          "section": "User Logout",
+          "category": "functionality",
+          "severity": "high",
+          "text": "Gap: Dashboard has no application content - it is a placeholder with 'Start building your application here' copy",
+          "testable": true
+        }
+      ],
+      "verifications": [
+        {
+          "claimId": "flow-logout-GAP-001",
+          "claim": "Gap: app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/lib/supabase/client.ts",
+              "lineNumber": 3,
+              "snippet": "export function getSupabaseBrowserClient() {\n  return createBrowserClient(...)\n}",
+              "confidence": 0.95
+            }
+          ],
+          "reasoning": "The browser client is exported from app/lib/supabase/client.ts but no import of getSupabaseBrowserClient or ~/lib/supabase/client appears in any of the provided route or component files, confirming the stated gap."
+        },
+        {
+          "claimId": "flow-logout-GAP-002",
+          "claim": "Gap: Dashboard has no application content - it is a placeholder with 'Start building your application here' copy",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 43,
+              "snippet": "<p className=\"mt-2 text-muted-foreground\">\n  This is your dashboard. Start building your application here.\n</p>",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The dashboard main content consists solely of a welcome heading with the user's email and a placeholder paragraph matching the claimed copy exactly - there is no functional application content."
+        },
+        {
+          "claimId": "flow-logout-STEP-001",
+          "claim": "Flow \"User Logout\" step 1: User clicks Sign out button which submits a POST form",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 34,
+              "snippet": "<Form method=\"post\">\n  <Button type=\"submit\" variant=\"outline\" size=\"sm\">\n    Sign out\n  </Button>\n</Form>",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "A React Router <Form method=\"post\"> wraps a submit button labeled 'Sign out', which triggers a POST request to the route action on click."
+        },
+        {
+          "claimId": "flow-logout-STEP-002",
+          "claim": "Flow \"User Logout\" step 2: Server action calls supabase.auth.signOut() to invalidate session",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 22,
+              "snippet": "const { supabase, headers } = createSupabaseServerClient(request);\nawait supabase.auth.signOut();",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The route action creates a server-side Supabase client and explicitly calls supabase.auth.signOut() to invalidate the session."
+        },
+        {
+          "claimId": "flow-logout-STEP-003",
+          "claim": "Flow \"User Logout\" step 3: Redirect to /auth/login with cleared session cookies",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 24,
+              "snippet": "return redirect(\"/auth/login\", { headers });",
+              "confidence": 0.9
+            },
+            {
+              "file": "app/lib/supabase/server.ts",
+              "lineNumber": 18,
+              "snippet": "setAll(cookiesToSet) {\n  for (const { name, value, options } of cookiesToSet) {\n    headers.append(\"Set-Cookie\", serializeCookieHeader(name, value, options));\n  }\n}",
+              "confidence": 0.9
+            }
+          ],
+          "reasoning": "The redirect to /auth/login passes the headers object that accumulates Set-Cookie headers from Supabase's cookie lifecycle hooks, which the SSR library uses to clear auth cookies on signOut."
+        },
+        {
+          "claimId": "flow-logout-SUCCESS",
+          "claim": "Flow \"User Logout\" success: Session invalidated, user redirected to login page",
+          "verdict": "PASS",
+          "evidence": [
+            {
+              "file": "app/routes/dashboard/_index.tsx",
+              "lineNumber": 21,
+              "snippet": "await supabase.auth.signOut();\nreturn redirect(\"/auth/login\", { headers });",
+              "confidence": 1
+            }
+          ],
+          "reasoning": "The action invalidates the session via signOut() and immediately redirects the user to /auth/login with headers that clear the session cookies, fully satisfying the success condition."
+        }
+      ],
+      "bugs": []
+    }
+  ],
+  "createdAt": "2026-03-07T09:16:56.626Z",
+  "completedAt": "2026-03-07T09:17:20.617Z",
+  "inputTokens": 50,
+  "outputTokens": 38332
+}

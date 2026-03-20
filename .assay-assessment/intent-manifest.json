@@ -1,0 +1,636 @@
+{
+  "version": 1,
+  "extractedAt": "2026-03-07T09:11:19.940Z",
+  "codebaseRoot": "/Users/webstantly/DEV/templates/saas-starter",
+  "frameworks": ["Node.js", "Vite", "Supabase"],
+  "flows": [
+    {
+      "id": "flow-home-visit",
+      "name": "Public Home Page Visit",
+      "description": "Any visitor lands on the public marketing/landing page",
+      "actor": "unauthenticated user",
+      "trigger": "GET /",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Render public layout with navigation header (Sign in / Get started links) and footer",
+          "codeRef": {
+            "file": "app/routes/layouts/public-layout.tsx",
+            "function": "PublicLayout"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Render welcome placeholder page with heading and CTA copy",
+          "codeRef": {
+            "file": "app/routes/_index.tsx",
+            "function": "Home"
+          }
+        }
+      ],
+      "successCriteria": "Welcome page rendered with nav links to auth routes",
+      "errorPaths": [],
+      "codePaths": [
+        {
+          "file": "app/routes/_index.tsx"
+        },
+        {
+          "file": "app/routes/layouts/public-layout.tsx"
+        },
+        {
+          "file": "app/routes.ts"
+        }
+      ]
+    },
+    {
+      "id": "flow-signup",
+      "name": "User Signup",
+      "description": "New user creates an account with email and password. Supabase sends a verification email.",
+      "actor": "unauthenticated user",
+      "trigger": "POST /auth/signup",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Render signup form inside auth layout (email, password >= 8 chars)",
+          "codeRef": {
+            "file": "app/routes/auth/signup.tsx",
+            "function": "Signup"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Extract email and password from FormData",
+          "codeRef": {
+            "file": "app/routes/auth/signup.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Call supabase.auth.signUp() with emailRedirectTo pointing to /auth/callback",
+          "codeRef": {
+            "file": "app/routes/auth/signup.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 4,
+          "action": "On error, return 400 with error message displayed inline",
+          "codeRef": {
+            "file": "app/routes/auth/signup.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 5,
+          "action": "On success, redirect to /auth/verify-email with session cookies set",
+          "codeRef": {
+            "file": "app/routes/auth/signup.tsx",
+            "function": "action"
+          }
+        }
+      ],
+      "successCriteria": "Supabase user record created, verification email dispatched, user redirected to verify-email page",
+      "errorPaths": [
+        "Duplicate email returns Supabase error displayed as inline error",
+        "Invalid email caught by HTML5 required/type=email validation",
+        "Password under 8 chars caught by minLength HTML5 attribute"
+      ],
+      "codePaths": [
+        {
+          "file": "app/routes/auth/signup.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        },
+        {
+          "file": "app/routes/layouts/auth-layout.tsx"
+        }
+      ]
+    },
+    {
+      "id": "flow-verify-email",
+      "name": "Email Verification Prompt",
+      "description": "After signup, user is shown a static page instructing them to check their email",
+      "actor": "newly registered user",
+      "trigger": "Redirect from POST /auth/signup on success",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Render static card with instructions to check email and link back to login",
+          "codeRef": {
+            "file": "app/routes/auth/verify-email.tsx",
+            "function": "VerifyEmail"
+          }
+        }
+      ],
+      "successCriteria": "User sees instructions and follows email link to complete verification",
+      "errorPaths": [
+        "No server-side resend mechanism - user must re-attempt signup to get a new email"
+      ],
+      "codePaths": [
+        {
+          "file": "app/routes/auth/verify-email.tsx"
+        },
+        {
+          "file": "app/routes/layouts/auth-layout.tsx"
+        }
+      ]
+    },
+    {
+      "id": "flow-oauth-callback",
+      "name": "Auth Code Callback (PKCE Session Exchange)",
+      "description": "Supabase redirects user back to the app after email link click; code is exchanged for a session cookie",
+      "actor": "user clicking email verification or password reset link",
+      "trigger": "GET /auth/callback?code=<code>",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Extract code query parameter from URL",
+          "codeRef": {
+            "file": "app/routes/auth/callback.tsx",
+            "function": "loader"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Call supabase.auth.exchangeCodeForSession(code) to establish session",
+          "codeRef": {
+            "file": "app/routes/auth/callback.tsx",
+            "function": "loader"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Redirect to /dashboard with Set-Cookie headers containing the session",
+          "codeRef": {
+            "file": "app/routes/auth/callback.tsx",
+            "function": "loader"
+          }
+        }
+      ],
+      "successCriteria": "Session cookie set, user lands on dashboard",
+      "errorPaths": [
+        "If no code param is present, redirect to /dashboard still occurs (no error handling)"
+      ],
+      "codePaths": [
+        {
+          "file": "app/routes/auth/callback.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        }
+      ]
+    },
+    {
+      "id": "flow-login",
+      "name": "User Login",
+      "description": "Existing user signs in with email and password",
+      "actor": "unauthenticated user",
+      "trigger": "POST /auth/login",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Render login form with email, password fields and forgot-password link",
+          "codeRef": {
+            "file": "app/routes/auth/login.tsx",
+            "function": "Login"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Extract email and password from FormData",
+          "codeRef": {
+            "file": "app/routes/auth/login.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Call supabase.auth.signInWithPassword({ email, password })",
+          "codeRef": {
+            "file": "app/routes/auth/login.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 4,
+          "action": "On error, return 400 with Supabase error message displayed inline",
+          "codeRef": {
+            "file": "app/routes/auth/login.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 5,
+          "action": "On success, redirect to /dashboard with session cookies in response headers",
+          "codeRef": {
+            "file": "app/routes/auth/login.tsx",
+            "function": "action"
+          }
+        }
+      ],
+      "successCriteria": "Session established, user redirected to /dashboard",
+      "errorPaths": [
+        "Invalid credentials returns Supabase error (displayed inline)",
+        "Invalid email format blocked by HTML5 type=email validation"
+      ],
+      "codePaths": [
+        {
+          "file": "app/routes/auth/login.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        },
+        {
+          "file": "app/routes/layouts/auth-layout.tsx"
+        }
+      ]
+    },
+    {
+      "id": "flow-forgot-password",
+      "name": "Forgot Password",
+      "description": "User who cannot remember their password requests a reset link via email",
+      "actor": "unauthenticated user",
+      "trigger": "POST /auth/forgot-password",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Render forgot-password form with email input",
+          "codeRef": {
+            "file": "app/routes/auth/forgot-password.tsx",
+            "function": "ForgotPassword"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Extract email from FormData",
+          "codeRef": {
+            "file": "app/routes/auth/forgot-password.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Call supabase.auth.resetPasswordForEmail(email, { redirectTo: origin + /auth/reset-password })",
+          "codeRef": {
+            "file": "app/routes/auth/forgot-password.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 4,
+          "action": "On error, return 400 with error message",
+          "codeRef": {
+            "file": "app/routes/auth/forgot-password.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 5,
+          "action": "On success, show inline success message prompting user to check email",
+          "codeRef": {
+            "file": "app/routes/auth/forgot-password.tsx",
+            "function": "action"
+          }
+        }
+      ],
+      "successCriteria": "Supabase dispatches password-reset email; success banner shown to user",
+      "errorPaths": [
+        "Supabase error (e.g. rate limit, unregistered email) displayed inline",
+        "Invalid email format caught by HTML5 validation before submission"
+      ],
+      "codePaths": [
+        {
+          "file": "app/routes/auth/forgot-password.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        },
+        {
+          "file": "app/routes/layouts/auth-layout.tsx"
+        }
+      ]
+    },
+    {
+      "id": "flow-reset-password",
+      "name": "Reset Password",
+      "description": "User arrives via password-reset email link and sets a new password",
+      "actor": "user with valid password-reset session token",
+      "trigger": "POST /auth/reset-password (after arriving via email link to GET /auth/reset-password)",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Render reset-password form with new password input (minLength 8)",
+          "codeRef": {
+            "file": "app/routes/auth/reset-password.tsx",
+            "function": "ResetPassword"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Extract new password from FormData",
+          "codeRef": {
+            "file": "app/routes/auth/reset-password.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Call supabase.auth.updateUser({ password }) using session established by the reset link",
+          "codeRef": {
+            "file": "app/routes/auth/reset-password.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 4,
+          "action": "On error, return 400 with error message displayed inline",
+          "codeRef": {
+            "file": "app/routes/auth/reset-password.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 5,
+          "action": "On success, redirect to /dashboard",
+          "codeRef": {
+            "file": "app/routes/auth/reset-password.tsx",
+            "function": "action"
+          }
+        }
+      ],
+      "successCriteria": "Password updated in Supabase Auth, user redirected to dashboard",
+      "errorPaths": [
+        "Expired or invalid token causes Supabase error displayed inline",
+        "Password under 8 chars caught by HTML5 minLength"
+      ],
+      "codePaths": [
+        {
+          "file": "app/routes/auth/reset-password.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        },
+        {
+          "file": "app/routes/layouts/auth-layout.tsx"
+        }
+      ]
+    },
+    {
+      "id": "flow-dashboard-access",
+      "name": "Authenticated Dashboard Access",
+      "description": "Authenticated user views their dashboard. Unauthenticated access is redirected to login.",
+      "actor": "authenticated user",
+      "trigger": "GET /dashboard",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Server loader calls supabase.auth.getUser() using session cookies",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "loader"
+          }
+        },
+        {
+          "order": 2,
+          "action": "If no user in session, redirect to /auth/login with refreshed headers",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "loader"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Return user email to the component",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "loader"
+          }
+        },
+        {
+          "order": 4,
+          "action": "Render dashboard shell: header with app name + sign out button, main with welcome message",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "Dashboard"
+          }
+        }
+      ],
+      "successCriteria": "Authenticated user sees dashboard with their email displayed",
+      "errorPaths": ["Unauthenticated request redirected to /auth/login"],
+      "codePaths": [
+        {
+          "file": "app/routes/dashboard/_index.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        }
+      ]
+    },
+    {
+      "id": "flow-logout",
+      "name": "User Logout",
+      "description": "Authenticated user signs out by submitting the sign-out form on the dashboard",
+      "actor": "authenticated user",
+      "trigger": "POST /dashboard (form submission from Sign out button)",
+      "steps": [
+        {
+          "order": 1,
+          "action": "User clicks Sign out button which submits a POST form",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "Dashboard"
+          }
+        },
+        {
+          "order": 2,
+          "action": "Server action calls supabase.auth.signOut() to invalidate session",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "action"
+          }
+        },
+        {
+          "order": 3,
+          "action": "Redirect to /auth/login with cleared session cookies",
+          "codeRef": {
+            "file": "app/routes/dashboard/_index.tsx",
+            "function": "action"
+          }
+        }
+      ],
+      "successCriteria": "Session invalidated, user redirected to login page",
+      "errorPaths": [],
+      "codePaths": [
+        {
+          "file": "app/routes/dashboard/_index.tsx"
+        },
+        {
+          "file": "app/lib/supabase/server.ts"
+        }
+      ]
+    }
+  ],
+  "dataModel": [
+    {
+      "name": "appConfig",
+      "source": "app/lib/db/schema.ts",
+      "fields": [
+        {
+          "name": "id",
+          "type": "serial/uuid",
+          "constraints": ["PRIMARY KEY"]
+        },
+        {
+          "name": "scope",
+          "type": "string",
+          "constraints": ["NOT NULL"]
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "constraints": ["NOT NULL"]
+        },
+        {
+          "name": "value",
+          "type": "jsonb/unknown",
+          "constraints": []
+        },
+        {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "constraints": []
+        }
+      ],
+      "relationships": []
+    },
+    {
+      "name": "users (Supabase Auth)",
+      "source": "Supabase Auth (managed externally)",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "constraints": ["PRIMARY KEY"]
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "constraints": ["UNIQUE", "NOT NULL"]
+        },
+        {
+          "name": "email_confirmed_at",
+          "type": "timestamp",
+          "constraints": []
+        },
+        {
+          "name": "encrypted_password",
+          "type": "string",
+          "constraints": []
+        }
+      ],
+      "relationships": []
+    }
+  ],
+  "authModel": {
+    "strategy": "Supabase Auth - cookie-based SSR sessions via @supabase/ssr (PKCE code exchange)",
+    "roles": ["authenticated", "unauthenticated"],
+    "guards": [
+      {
+        "pattern": "/dashboard",
+        "requiredRole": "authenticated",
+        "mechanism": "server loader - supabase.auth.getUser() check with redirect to /auth/login on failure"
+      }
+    ]
+  },
+  "featureMap": [
+    {
+      "name": "Authentication",
+      "flows": [
+        "flow-signup",
+        "flow-verify-email",
+        "flow-oauth-callback",
+        "flow-login",
+        "flow-forgot-password",
+        "flow-reset-password",
+        "flow-logout"
+      ],
+      "completeness": "full"
+    },
+    {
+      "name": "Dashboard / App Shell",
+      "flows": ["flow-dashboard-access"],
+      "completeness": "stub"
+    },
+    {
+      "name": "Landing / Marketing Page",
+      "flows": ["flow-home-visit"],
+      "completeness": "stub"
+    },
+    {
+      "name": "Configuration System",
+      "flows": [],
+      "completeness": "partial"
+    },
+    {
+      "name": "Server Utilities",
+      "flows": [],
+      "completeness": "stub"
+    }
+  ],
+  "gaps": [
+    {
+      "type": "missing-flow",
+      "description": "No loader on /auth/reset-password to validate that the user arrived via a valid reset link before showing the password form",
+      "evidence": "app/routes/auth/reset-password.tsx has no loader; the page renders unconditionally and the action calls updateUser blindly - will fail with a Supabase error if no valid session/token"
+    },
+    {
+      "type": "missing-flow",
+      "description": "No error handling when /auth/callback receives no code parameter",
+      "evidence": "app/routes/auth/callback.tsx: if (!code) the exchangeCodeForSession call is skipped but redirect('/dashboard') still fires, landing an unauthenticated user on the dashboard where the loader will bounce them back"
+    },
+    {
+      "type": "orphaned-table",
+      "description": "appConfig table has full CRUD service layer but is never read or written by any route or feature",
+      "evidence": "app/lib/server/config.ts implements getConfig/setConfig/deleteConfig/getConfigCascade; no route file imports or calls these functions"
+    },
+    {
+      "type": "dead-code",
+      "description": "app/lib/server/rate-limit.ts, events.ts, features.ts, form.ts, logger.ts exist but are not imported by any route",
+      "evidence": "Files present in file tree but no route file references them; likely scaffolded as future utilities"
+    },
+    {
+      "type": "dead-code",
+      "description": "app/lib/supabase/client.ts (browser Supabase client) is defined but not imported in any visible route or component",
+      "evidence": "File exists in tree; all auth operations in routes use the server client from app/lib/supabase/server.ts"
+    },
+    {
+      "type": "incomplete-flow",
+      "description": "Dashboard has no application content - it is a placeholder with 'Start building your application here' copy",
+      "evidence": "app/routes/dashboard/_index.tsx renders only user email and placeholder text; no sub-routes or features exist under /dashboard"
+    },
+    {
+      "type": "incomplete-flow",
+      "description": "Landing page has no real marketing content, pricing, or CTA linked to a product",
+      "evidence": "app/routes/_index.tsx renders only 'Welcome / Start building your project.' - pure scaffold"
+    },
+    {
+      "type": "missing-flow",
+      "description": "No password confirmation field on signup or reset-password forms, creating risk of typo-locked accounts",
+      "evidence": "app/routes/auth/signup.tsx and app/routes/auth/reset-password.tsx each have a single password field with no confirm-password field"
+    },
+    {
+      "type": "unguarded-route",
+      "description": "/auth/reset-password has no guard to prevent authenticated users from accessing it",
+      "evidence": "app/routes/auth/reset-password.tsx has no loader checking auth state; authenticated users could accidentally overwrite their password"
+    },
+    {
+      "type": "missing-flow",
+      "description": "specs/todo/modularity-upgrades.md indicates planned architectural improvements not yet implemented",
+      "evidence": "File exists in specs/todo/ directory suggesting known future work items"
+    }
+  ],
+  "confirmedBy": "user",
+  "confirmedAt": "2026-03-07T09:14:56.547Z"
+}

@@ -1,0 +1,156 @@
+{
+  "repoName": "saas-starter",
+  "repoUrl": "local",
+  "frameworks": ["Node.js", "Vite", "Supabase"],
+  "catalogFrameworks": ["supabase", "react"],
+  "manifest": {
+    "flows": 9,
+    "entities": 2,
+    "gaps": 10,
+    "confirmed": true
+  },
+  "totalFlows": 9,
+  "totalClaims": 69,
+  "verdicts": {
+    "pass": 68,
+    "partial": 1,
+    "fail": 0,
+    "na": 0
+  },
+  "bugs": 1,
+  "integrationChecks": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1,
+    "failures": [
+      {
+        "type": "asset_reference_broken",
+        "file": "app/components/ui/image.tsx",
+        "evidence": "Asset '/images/hero.jpg' referenced in app/components/ui/image.tsx not found in public/.",
+        "severity": "medium"
+      }
+    ]
+  },
+  "flowResults": [
+    {
+      "flowId": "FLOW-001",
+      "flow": "GET /",
+      "domain": "Public Home Page Visit",
+      "claimCount": 4,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 4,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-002",
+      "flow": "POST /auth/signup",
+      "domain": "User Signup",
+      "claimCount": 11,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 11,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-003",
+      "flow": "Redirect from POST /auth/signup on success",
+      "domain": "Email Verification Prompt",
+      "claimCount": 3,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 3,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-004",
+      "flow": "GET /auth/callback?code=<code>",
+      "domain": "Auth Code Callback (PKCE Session Exchange)",
+      "claimCount": 7,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 7,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-005",
+      "flow": "POST /auth/login",
+      "domain": "User Login",
+      "claimCount": 9,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 9,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-006",
+      "flow": "POST /auth/forgot-password",
+      "domain": "Forgot Password",
+      "claimCount": 9,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 9,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-007",
+      "flow": "POST /auth/reset-password (after arriving via email link to GET /auth/reset-password)",
+      "domain": "Reset Password",
+      "claimCount": 12,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 12,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-008",
+      "flow": "GET /dashboard",
+      "domain": "Authenticated Dashboard Access",
+      "claimCount": 8,
+      "bugCount": 1,
+      "verdicts": {
+        "pass": 7,
+        "partial": 1,
+        "fail": 0,
+        "na": 0
+      }
+    },
+    {
+      "flowId": "FLOW-009",
+      "flow": "POST /dashboard (form submission from Sign out button)",
+      "domain": "User Logout",
+      "claimCount": 6,
+      "bugCount": 0,
+      "verdicts": {
+        "pass": 6,
+        "partial": 0,
+        "fail": 0,
+        "na": 0
+      }
+    }
+  ],
+  "inputTokens": 47,
+  "outputTokens": 37712,
+  "completedAt": "2026-03-07T09:16:56.626Z"
+}

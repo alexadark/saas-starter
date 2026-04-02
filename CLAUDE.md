@@ -156,8 +156,6 @@ app/
   styles/          Global CSS + design tokens
 test/
   mocks/           MSW mock handlers
-.claude/
-  references/      Reference docs (React Router patterns)
 .storybook/        Storybook configuration
 .github/
   workflows/       CI pipeline

@@ -10,10 +10,21 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { createRateLimiter, getRateLimitHeaders } from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/forgot-password";
 
+const forgotPasswordLimiter = createRateLimiter({ windowMs: 60_000, max: 5 });
+
 export async function action({ request }: Route.ActionArgs) {
+  const limit = forgotPasswordLimiter(request);
+  if (!limit.allowed) {
+    return new Response("Too Many Requests", {
+      status: 429,
+      headers: getRateLimitHeaders(limit),
+    });
+  }
+
   const { supabase } = createSupabaseServerClient(request);
   const formData = await request.formData();
 

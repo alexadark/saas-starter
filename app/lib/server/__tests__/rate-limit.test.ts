@@ -85,6 +85,44 @@ describe("rate-limit", () => {
       const otherReq = makeRequest("172.16.0.2");
       expect(limiter(otherReq).allowed).toBe(true);
     });
+
+    it("prefers x-real-ip over x-forwarded-for", () => {
+      const limiter = createRateLimiter({ windowMs: 60_000, max: 1 });
+      const req = new Request("http://localhost/api", {
+        headers: {
+          "x-real-ip": "10.0.0.1",
+          "x-forwarded-for": "192.168.1.1, 172.16.0.5",
+        },
+      });
+
+      limiter(req);
+      const result = limiter(req);
+      // Should be blocked under 10.0.0.1 (from x-real-ip), not 172.16.0.5 (last of x-forwarded-for)
+      expect(result.allowed).toBe(false);
+
+      // A request identified only by x-forwarded-for last value should be a different bucket
+      const otherReq = new Request("http://localhost/api", {
+        headers: { "x-forwarded-for": "192.168.1.1, 172.16.0.5" },
+      });
+      expect(limiter(otherReq).allowed).toBe(true);
+    });
+
+    it("uses last value of x-forwarded-for (not first)", () => {
+      const limiter = createRateLimiter({ windowMs: 60_000, max: 1 });
+      const req = new Request("http://localhost/api", {
+        headers: { "x-forwarded-for": "spoofed.ip, real.proxy.ip" },
+      });
+
+      limiter(req);
+      const blocked = limiter(req);
+      expect(blocked.allowed).toBe(false);
+
+      // Request from the spoofed IP (first value) should be a different bucket
+      const spoofReq = new Request("http://localhost/api", {
+        headers: { "x-forwarded-for": "real.proxy.ip, spoofed.ip" },
+      });
+      expect(limiter(spoofReq).allowed).toBe(true);
+    });
   });
 
   describe("getRateLimitHeaders()", () => {

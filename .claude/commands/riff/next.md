@@ -148,19 +148,16 @@ If CRITICAL or HIGH findings: mark phase as `blocked` and report.
 After security review passes, create a pull request and merge:
 
 1. **Push the branch:**
-
    ```bash
    git push -u origin riff/phase-N-slug
    ```
 
 2. **Create a PR:**
-
    ```bash
    gh pr create --title "riff(phase-N): PHASE_TITLE" --body "## Phase N: PHASE_TITLE\n\n### Built\n- artifacts from SUMMARY.md\n\n### Verification\n- PASS/FAIL from VERIFICATION.md\n\n### Security\n- PASS/issues from security review"
    ```
 
 3. **Merge the PR:**
-
    ```bash
    gh pr merge --squash --delete-branch
    ```
@@ -246,6 +243,52 @@ Check `.planning/seeds/` for seeds written during this phase (R4 deviations). Fo
 - Ensure it has a `trigger:` field (if missing, add one based on context)
 - Ensure it has enough detail for a future planner to understand the idea
 
+### Step 8c: Framework Sync Check
+
+If `.riff/` exists and is a git repo, check for modifications to the framework:
+
+```bash
+cd .riff && git status --porcelain
+```
+
+If there are changes (agents or commands were modified during this phase):
+
+**In interactive mode:**
+
+Show the diff and ask:
+
+```
+Framework modifications detected in .riff/:
+
+  modified: agents/executor.md
+  modified: agents/planner.md
+
+These changes could improve RIFF for all future projects.
+Push to upstream? [yes/no/diff]
+```
+
+- If **yes**: commit and push from `.riff/`
+  ```bash
+  cd .riff && git add -A && git commit -m "learn(phase-N): description of changes" && git push
+  ```
+- If **no**: leave changes uncommitted in `.riff/` (they persist locally)
+- If **diff**: show the full diff, then ask again
+
+**In AFK mode (Ralph loop):**
+
+Do NOT push. Instead, log the pending changes in STATE.md:
+
+```
+## Framework Changes Pending
+- `.riff/agents/executor.md` modified (wave execution improvement)
+- `.riff/agents/planner.md` modified (wave grouping rule)
+
+Review with: `cd .riff && git diff`
+Push with: `cd .riff && git add -A && git commit -m "learn: description" && git push`
+```
+
+The human reviews these at the end of the loop or at `/riff:status`.
+
 ### Step 9: Report
 
 Show the user:
@@ -261,6 +304,7 @@ Deviations: {{count}} (R1: {{n}}, R2: {{n}}, R3: {{n}}, R4: {{n}})
 Security: {{PASS/issues found}}
 
 Next: Phase {{N+1}}: {{NEXT_TITLE}} ({{NEXT_PRIORITY}}, {{NEXT_MODE}})
+Framework: {{no changes / N files modified (pending review)}}
 ```
 
 ## AFK Mode (Ralph Loop)

@@ -58,20 +58,16 @@ notify() {
 
   echo -e "${BLUE}[RIFF Loop]${NC} $message"
 
-  # Telegram notification via n8n webhook (or direct Telegram API as fallback)
-  local emoji=""
-  case "$level" in
-    info) emoji="🎸" ;;
-    warn) emoji="⚠️" ;;
-    error) emoji="🛑" ;;
-    done) emoji="✅" ;;
-  esac
+  # Telegram notification
+  if [ -n "$RIFF_TELEGRAM_BOT_TOKEN" ] && [ -n "$RIFF_TELEGRAM_CHAT_ID" ]; then
+    local emoji=""
+    case "$level" in
+      info) emoji="🎸" ;;
+      warn) emoji="⚠️" ;;
+      error) emoji="🛑" ;;
+      done) emoji="✅" ;;
+    esac
 
-  # Option 1: n8n webhook (preferred - already configured globally)
-  if [ -f ".claude/hooks/riff/notify-human.sh" ]; then
-    bash .claude/hooks/riff/notify-human.sh "${emoji} RIFF: ${message}"
-  # Option 2: Direct Telegram API
-  elif [ -n "$RIFF_TELEGRAM_BOT_TOKEN" ] && [ -n "$RIFF_TELEGRAM_CHAT_ID" ]; then
     curl -s -X POST "https://api.telegram.org/bot${RIFF_TELEGRAM_BOT_TOKEN}/sendMessage" \
       -d "chat_id=${RIFF_TELEGRAM_CHAT_ID}" \
       -d "text=${emoji} RIFF: ${message}" \
@@ -81,11 +77,7 @@ notify() {
 
 # Display banner
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -f ".claude/hooks/riff/banner.sh" ]; then
-  bash .claude/hooks/riff/banner.sh
-elif [ -f "$SCRIPT_DIR/templates/banner.sh" ]; then
-  bash "$SCRIPT_DIR/templates/banner.sh"
-fi
+bash "$SCRIPT_DIR/templates/banner.sh"
 
 # Check prerequisites
 cd "$PROJECT_PATH"
@@ -208,6 +200,25 @@ Co-Authored-By: RIFF Loop <riff@automated>" || true
     sleep "$COOLDOWN"
   fi
 done
+
+# Check for framework modifications
+if [ -d ".riff" ] && [ -d ".riff/.git" ]; then
+  RIFF_CHANGES=$(cd .riff && git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+  if [ "$RIFF_CHANGES" -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}═══════════════════════════════════════════${NC}"
+    echo -e "${YELLOW}  Framework Changes Pending Review${NC}"
+    echo -e "${YELLOW}═══════════════════════════════════════════${NC}"
+    echo ""
+    (cd .riff && git status --short)
+    echo ""
+    echo -e "${YELLOW}Review:  cd .riff && git diff${NC}"
+    echo -e "${YELLOW}Accept:  cd .riff && git add -A && git commit -m \"learn: description\" && git push${NC}"
+    echo -e "${YELLOW}Discard: cd .riff && git checkout .${NC}"
+    echo ""
+    notify "Framework has $RIFF_CHANGES pending changes. Review before pushing." "warn"
+  fi
+fi
 
 # Final status
 echo ""

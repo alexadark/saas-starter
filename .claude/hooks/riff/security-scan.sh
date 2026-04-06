@@ -127,6 +127,19 @@ if [ -f "$SCRIPT_DIR/orphan-file-check.sh" ]; then
   bash "$SCRIPT_DIR/orphan-file-check.sh"
 fi
 
+# Check 7: Tests pass
+echo -n "  Running test suite... "
+TEST_OUTPUT=$(npx vitest run 2>&1)
+TEST_EXIT=$?
+if [ $TEST_EXIT -ne 0 ]; then
+  echo ""
+  echo -e "  ${RED}BLOCKED: Tests failing${NC}"
+  echo "$TEST_OUTPUT" | tail -10
+  ISSUES_FOUND=$((ISSUES_FOUND + 1))
+else
+  echo "OK"
+fi
+
 # Final verdict
 echo ""
 if [ $ISSUES_FOUND -gt 0 ]; then

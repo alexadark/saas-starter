@@ -125,14 +125,20 @@ export * from "./features";
 | `.test.ts`         | Co-located test file                     | `config.test.ts`                  |
 | `resources/` route | Non-page endpoint (API, webhook, toggle) | `routes/resources/revalidate.tsx` |
 
-## Testing
+## Testing (Kent C. Dodds Testing Trophy)
 
-- Vitest + Testing Library + MSW for unit/integration
-- Playwright for E2E
-- Storybook 10 for component exploration
-- MSW handlers in `test/mocks/handlers.ts`
-- Test user behavior (`getByRole`), not implementation (`querySelector`)
-- TDD for backend services (rule 5), Playwright for routes
+- "Write tests. Not too many. Mostly integration."
+- Target ~70% coverage focused on critical paths, not 100%
+- Mock external APIs only (MSW) - never mock your own database
+- E2E (Playwright) for route testing - don't unit test loaders/actions
+- Unit tests only for complex business logic utilities
+- No unit tests for simple presentational components
+- Test user behavior (getByRole), not implementation (querySelector)
+- Database tests: use PGLite or real test DB, not mocked Drizzle chains
+- Per feature target: ~3-5 E2E, ~2-3 integration, unit only if complex logic
+- passWithNoTests: false - every test file must have tests
+- New components MUST have `.stories.tsx` (Default + DarkMode variants)
+- New backend services MUST have `__tests__/*.test.ts`
 
 ## State Management
 

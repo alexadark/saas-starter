@@ -60,11 +60,30 @@ Is the artifact connected to the rest of the application?
 7. **Write VERIFICATION.md** with verdicts and evidence
    - Include a "Hook Warnings" section listing all warnings and their resolution
 
+### Level 4: TESTS PASS
+
+Run the full test suite and capture real output:
+
+1. `npm run test` (Vitest) - capture output as evidence
+2. `npm run typecheck` - capture output
+3. `npm run lint` - capture output
+4. If ANY test file was created/modified: verify tests actually run (not just exist)
+5. Evidence: paste actual command output, not "tests pass"
+
+### Level 5: AUTOMATION CHECKS
+
+Detect what needs attention and act accordingly:
+
+1. **New components without stories**: Search for `.tsx` files in `app/components/` created in this phase that have no matching `.stories.tsx`. If found: log as FAIL finding.
+2. **Schema changes**: If `app/lib/db/schema.ts` was modified, notify via Telegram: "Schema changed in phase N - run `npm run db:push` when ready". Use: `curl -s -X POST "https://n8n.cutzai.com/webhook/claude-telegram-alert" -H "Content-Type: application/json" -d '{"message": "..."}'`
+3. **E2E tests**: If any route file in `app/routes/` was modified, run `npx playwright test` and capture output. If `.env` is missing, skip with note.
+4. **Storybook build**: If any component in `app/components/` was modified or created, run `npx storybook build --test` to verify stories compile. If it fails, log as FAIL finding.
+
 ## Verdicts
 
-- **PASS** - All artifacts exist, are substantive, and are wired. All ACs met. No security issues.
-- **PASS WITH ISSUES** - Core functionality works but minor issues found. List them.
-- **FAIL** - One or more artifacts are stubs, orphaned, or missing. Or ACs not met. Or security issue found. List exactly what needs fixing.
+- **PASS** - All artifacts exist, are substantive, and are wired. All ACs met. No security issues. All tests pass (Levels 4-5 green).
+- **PASS WITH ISSUES** - Core functionality works but minor issues found (e.g. missing stories, skipped E2E). List them.
+- **FAIL** - One or more artifacts are stubs, orphaned, or missing. Or ACs not met. Or security issue found. Or tests failing. Or new components without stories. List exactly what needs fixing.
 
 ## On FAIL
 

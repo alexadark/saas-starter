@@ -73,7 +73,9 @@ Tasks that can run in parallel go in the same wave. Tasks with dependencies go i
 - Wave 1: tasks A, B (parallel - no shared files)
 - Wave 2: task C (depends on A and B)
 
-## Security Awareness
+## Automatic Checks (included in EVERY plan)
+
+### Security Awareness
 
 For EVERY plan, check:
 
@@ -83,6 +85,19 @@ For EVERY plan, check:
 - Does any task touch auth/payment? → Mark the phase as HITL in ROADMAP.yaml
 
 The human will NOT catch these. You must.
+
+### Test & Story Acceptance Criteria
+
+For EVERY plan, the planner MUST add these acceptance criteria automatically:
+
+- **New backend service/utility** → AC includes: "Tests exist in `__tests__/` and pass"
+- **New component** → AC includes: "`.stories.tsx` file exists with Default + DarkMode variants"
+- **New route** → AC includes: "E2E test covers the happy path"
+- **Schema change** → AC includes: "Migration note added to SUMMARY.md"
+- **Auth-related change** → AC includes: "Rate limiting applied, auth check in loader"
+- **Any code change** → AC includes: "All existing tests still pass (`npm run test`)"
+
+These are non-negotiable. The verifier will check them.
 
 ## Tracer Bullets
 

@@ -127,12 +127,13 @@ This project uses the RIFF framework for structured development.
 ### Git Workflow
 
 Each phase runs on its own branch with a PR:
+```
 
-```
 main
-  └─ riff/phase-1-slug   → PR → squash merge → main
-  └─ riff/phase-2-slug   → PR → squash merge → main
-```
+└─ riff/phase-1-slug → PR → squash merge → main
+└─ riff/phase-2-slug → PR → squash merge → main
+
+````
 
 - Branch created before planning: `riff/phase-N-slug`
 - Each task gets an atomic commit on the branch
@@ -152,7 +153,7 @@ RIFF is installed in `.riff/` (git clone). To update:
 
 ```bash
 cd .riff && git pull
-```
+````
 
 After each phase, RIFF checks if agents made modifications to the framework. These are proposed as HITL decisions - you review and approve before they're pushed upstream.
 
@@ -164,13 +165,14 @@ After each phase, RIFF checks if agents made modifications to the framework. The
 - `CONTEXT.md` - Locked decisions
 - `taste.md` - Architectural rules (sectioned by concern)
 - `.riff/` - Framework source (clone, gitignored)
-```
+
+````
 
 11. **Display the RIFF banner and confirm installation:**
 
 ```bash
 bash .riff/templates/banner.sh
-```
+````
 
 Then print:
 

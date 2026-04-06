@@ -148,16 +148,19 @@ If CRITICAL or HIGH findings: mark phase as `blocked` and report.
 After security review passes, create a pull request and merge:
 
 1. **Push the branch:**
+
    ```bash
    git push -u origin riff/phase-N-slug
    ```
 
 2. **Create a PR:**
+
    ```bash
    gh pr create --title "riff(phase-N): PHASE_TITLE" --body "## Phase N: PHASE_TITLE\n\n### Built\n- artifacts from SUMMARY.md\n\n### Verification\n- PASS/FAIL from VERIFICATION.md\n\n### Security\n- PASS/issues from security review"
    ```
 
 3. **Merge the PR:**
+
    ```bash
    gh pr merge --squash --delete-branch
    ```

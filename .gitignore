@@ -47,3 +47,6 @@ storybook-static
 test-results/
 playwright-report/
 blob-report/
+
+# RIFF debug sessions (may contain sensitive debugging info)
+.planning/debug/

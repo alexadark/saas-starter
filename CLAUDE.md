@@ -208,3 +208,33 @@ After cloning this template:
 - [ ] Install project-specific fonts (`@fontsource/*`)
 - [ ] Install GSD: `npx get-shit-done-cc@latest`
 - [ ] Run `/gsd:new-project` to begin
+
+## RIFF Framework
+
+This project uses the RIFF framework for structured development.
+
+### Commands
+
+- `/riff:start` - Discovery pipeline (questions → wireframes → roadmap → taste.md)
+- `/riff:next` - Pick next task → plan → execute → verify → commit
+- `/riff:status` - Where am I + what's next
+- `/riff:quick <task>` - Ad-hoc task, no phase overhead
+- `/riff:check` - Manual verification + security review
+- `/riff:debug <issue>` - Structured debugging
+
+### Execution Rules
+
+- Read taste.md before any code changes (Architecture section always, relevant section for the task)
+- Confidence gate before any execution (scope, target, output, risk)
+- Assumptions mode before any planning (Confident/Likely/Unclear)
+- Atomic commits per task (never git add .)
+- R1-R4 deviation rules during execution
+- Security review after every build phase
+
+### Files
+
+- `PROJECT.md` - Product definition, wireframes, architecture
+- `ROADMAP.yaml` - Phases with status, priority, mode, dependencies
+- `STATE.md` - Current position and blockers
+- `CONTEXT.md` - Locked decisions
+- `taste.md` - Architectural rules (sectioned by concern)

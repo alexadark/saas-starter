@@ -1,0 +1,9 @@
+phases:
+  - id: 0
+    title: Starter Template Hardening
+    slug: starter-hardening
+    description: Fix security issues, wire test automation hooks, update RIFF agents to run real tests
+    status: todo
+    priority: P0
+    mode: AFK
+    depends_on: []

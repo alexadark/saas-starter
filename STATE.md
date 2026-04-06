@@ -2,25 +2,22 @@
 
 ## Current Position
 
-- **Phase**: Mapped
-- **Status**: Codebase explored, RIFF artifacts generated (2026-04-06)
-- **Last action**: /riff:map completed
+- **Phase**: 0 - Starter Template Hardening
+- **Status**: Planned, ready for execution
+- **Last action**: PLAN.md written for phase 0
 
 ## Active Decisions
 
-- Architecture documented in `.planning/architecture.md`
-- Conventions extracted to `taste.md`
-- Risks catalogued in `.planning/risks.md`
+- taste.md uses SignalFinder 2 reference (14 rules + hexagonal arch)
+- Testing strategy: Epic Stack / Kent C. Dodds Testing Trophy
+- Full test automation: per-edit, per-commit, per-phase
+- Only db:push remains manual (destructive)
 
 ## Blockers
 
-- No `.env` configured (cannot run locally)
-- Database schema not pushed to Supabase
-- No product definition yet (template only)
+- No `.env` configured (E2E tests will be skipped until configured)
+- Database schema not pushed
 
 ## Next Action
 
-1. Review `taste.md` and `.planning/risks.md` - correct any misidentified conventions
-2. Configure Supabase credentials (`.env`)
-3. Define product features -> create ROADMAP.yaml
-4. Run `/riff:next` to start building
+Run `/riff:next` in a fresh session to execute phase 0.

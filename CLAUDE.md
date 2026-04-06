@@ -232,6 +232,30 @@ This project uses the RIFF framework for structured development.
 - R1-R4 deviation rules during execution
 - Security review after every build phase
 
+### Git Workflow
+
+Each phase runs on its own branch with a PR:
+
+```
+main
+  └─ riff/phase-1-slug   → PR → squash merge → main
+  └─ riff/phase-2-slug   → PR → squash merge → main
+```
+
+- Branch created before planning: `riff/phase-N-slug`
+- Each task gets an atomic commit on the branch
+- PR created after verification + security review pass
+- Squash merge into main with branch cleanup
+- Failed phases keep their branch open for fix iterations
+
+### Wave Parallelization
+
+Tasks within a phase are grouped into waves by the planner:
+
+- Tasks in the same wave have **zero file overlap** and run in parallel (via Agent subagents)
+- Tasks in different waves run sequentially (Wave 2 depends on Wave 1)
+- The planner verifies no shared files in boundaries before grouping
+
 ### Files
 
 - `PROJECT.md` - Product definition, wireframes, architecture

@@ -7,6 +7,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
+import { z } from "zod/v4";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -27,6 +28,11 @@ import {
 } from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/signup";
+
+const signupSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
 const signupLimiter = createRateLimiter({ windowMs: 60_000, max: 5 });
 
@@ -49,10 +55,20 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   validateCsrf(request, formData);
 
-  const { supabase, headers } = createSupabaseServerClient(request);
+  const raw = Object.fromEntries(formData.entries());
+  const parsed = signupSchema.safeParse(raw);
+  if (!parsed.success) {
+    const errors: Record<string, string[]> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path.join(".") || "_form";
+      if (!errors[field]) errors[field] = [];
+      errors[field].push(issue.message);
+    }
+    return data({ error: null, fieldErrors: errors }, { status: 400 });
+  }
+  const { email, password } = parsed.data;
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const { supabase, headers } = createSupabaseServerClient(request);
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -63,7 +79,7 @@ export async function action({ request }: Route.ActionArgs) {
   });
 
   if (error) {
-    return data({ error: error.message }, { status: 400 });
+    return data({ error: error.message, fieldErrors: null }, { status: 400 });
   }
 
   return redirect("/auth/verify-email", { headers });
@@ -116,6 +132,11 @@ export default function Signup() {
               required
               autoComplete="email"
             />
+            {actionData?.fieldErrors?.email && (
+              <p className="text-sm text-destructive">
+                {actionData.fieldErrors.email[0]}
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -127,6 +148,11 @@ export default function Signup() {
               minLength={8}
               autoComplete="new-password"
             />
+            {actionData?.fieldErrors?.password && (
+              <p className="text-sm text-destructive">
+                {actionData.fieldErrors.password[0]}
+              </p>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">

@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
+import { z } from "zod/v4";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -20,6 +21,10 @@ import { Label } from "~/components/ui/label";
 import { generateCsrfToken, setCsrfCookie, validateCsrf } from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/reset-password";
+
+const resetSchema = z.object({
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { supabase, headers } = createSupabaseServerClient(request);
@@ -40,14 +45,25 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   validateCsrf(request, formData);
 
-  const { supabase, headers } = createSupabaseServerClient(request);
+  const raw = Object.fromEntries(formData.entries());
+  const parsed = resetSchema.safeParse(raw);
+  if (!parsed.success) {
+    const errors: Record<string, string[]> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path.join(".") || "_form";
+      if (!errors[field]) errors[field] = [];
+      errors[field].push(issue.message);
+    }
+    return data({ error: null, fieldErrors: errors }, { status: 400 });
+  }
+  const { password } = parsed.data;
 
-  const password = formData.get("password") as string;
+  const { supabase, headers } = createSupabaseServerClient(request);
 
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    return data({ error: error.message }, { status: 400 });
+    return data({ error: error.message, fieldErrors: null }, { status: 400 });
   }
 
   return redirect("/dashboard", { headers });
@@ -87,6 +103,11 @@ export default function ResetPassword() {
               minLength={8}
               autoComplete="new-password"
             />
+            {actionData?.fieldErrors?.password && (
+              <p className="text-sm text-destructive">
+                {actionData.fieldErrors.password[0]}
+              </p>
+            )}
           </div>
         </CardContent>
         <CardFooter>

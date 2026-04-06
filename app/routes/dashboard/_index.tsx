@@ -1,5 +1,6 @@
-import { Form, redirect, useLoaderData } from "react-router";
+import { data, Form, redirect, useLoaderData } from "react-router";
 import { Button } from "~/components/ui/button";
+import { APP_NAME } from "~/lib/constants";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/_index";
 
@@ -14,7 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/auth/login", { headers });
   }
 
-  return { email: user.email };
+  return data({ email: user.email }, { headers });
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -25,6 +26,20 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect("/auth/login", { headers });
 }
 
+export const ErrorBoundary = () => {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <h1 className="text-2xl font-bold">Something went wrong</h1>
+      <p className="mt-2 text-muted-foreground">
+        An error occurred while loading the dashboard.
+      </p>
+      <a href="/" className="mt-4 text-primary hover:underline">
+        Back to home
+      </a>
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const { email } = useLoaderData<typeof loader>();
 
@@ -32,7 +47,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-border">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <h1 className="text-lg font-semibold">SaaS Starter</h1>
+          <h1 className="text-lg font-semibold">{APP_NAME}</h1>
           <Form method="post">
             <Button type="submit" variant="outline" size="sm">
               Sign out

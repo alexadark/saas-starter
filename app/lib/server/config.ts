@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { z } from "zod";
 import type * as schema from "../db/schema";
@@ -30,9 +30,17 @@ export const getConfigCascade = async <T>(
   zodSchema: z.ZodType<T>,
   scopes: string[],
 ): Promise<T | null> => {
+  const rows = await db
+    .select()
+    .from(appConfig)
+    .where(and(eq(appConfig.key, key), inArray(appConfig.scope, scopes)));
+
   for (const scope of scopes) {
-    const value = await getConfig(db, scope, key, zodSchema);
-    if (value !== null) return value;
+    const row = rows.find((r) => r.scope === scope);
+    if (row) {
+      const result = zodSchema.safeParse(row.value);
+      if (result.success) return result.data;
+    }
   }
   return null;
 };
@@ -43,20 +51,13 @@ export const setConfig = async (
   key: string,
   value: unknown,
 ): Promise<void> => {
-  const [existing] = await db
-    .select({ id: appConfig.id })
-    .from(appConfig)
-    .where(and(eq(appConfig.scope, scope), eq(appConfig.key, key)))
-    .limit(1);
-
-  if (existing) {
-    await db
-      .update(appConfig)
-      .set({ value, updatedAt: new Date() })
-      .where(and(eq(appConfig.scope, scope), eq(appConfig.key, key)));
-  } else {
-    await db.insert(appConfig).values({ scope, key, value });
-  }
+  await db
+    .insert(appConfig)
+    .values({ scope, key, value })
+    .onConflictDoUpdate({
+      target: [appConfig.scope, appConfig.key],
+      set: { value, updatedAt: new Date() },
+    });
 };
 
 export const deleteConfig = async (

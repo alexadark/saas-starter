@@ -25,6 +25,8 @@ export { getEnabledFlags, isEnabled } from "./features";
 export { formDataToObject, parseFormData } from "./form";
 // Logger
 export { logger } from "./logger";
+// CSRF protection
+export { generateCsrfToken, setCsrfCookie, validateCsrf } from "./csrf";
 // Rate limiter
 export {
   createRateLimiter,

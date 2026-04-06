@@ -4,6 +4,7 @@ import {
   Link,
   redirect,
   useActionData,
+  useLoaderData,
   useNavigation,
 } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -17,11 +18,24 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createRateLimiter, getRateLimitHeaders } from "~/lib/server";
+import {
+  createRateLimiter,
+  generateCsrfToken,
+  getRateLimitHeaders,
+  setCsrfCookie,
+  validateCsrf,
+} from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/login";
 
 const loginLimiter = createRateLimiter({ windowMs: 60_000, max: 10 });
+
+export const loader = ({ request }: Route.LoaderArgs) => {
+  const csrfToken = generateCsrfToken();
+  const headers = new Headers();
+  setCsrfCookie(headers, csrfToken);
+  return data({ csrfToken }, { headers });
+};
 
 export async function action({ request }: Route.ActionArgs) {
   const limit = loginLimiter(request);
@@ -32,8 +46,10 @@ export async function action({ request }: Route.ActionArgs) {
     });
   }
 
-  const { supabase, headers } = createSupabaseServerClient(request);
   const formData = await request.formData();
+  validateCsrf(request, formData);
+
+  const { supabase, headers } = createSupabaseServerClient(request);
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -47,7 +63,24 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect("/dashboard", { headers });
 }
 
+export const ErrorBoundary = () => {
+  return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Something went wrong</CardTitle>
+        <CardDescription>An error occurred. Please try again.</CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <a href="/auth/login" className="text-primary hover:underline">
+          Try again
+        </a>
+      </CardFooter>
+    </Card>
+  );
+};
+
 export default function Login() {
+  const { csrfToken } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -62,6 +95,7 @@ export default function Login() {
       </CardHeader>
       <Form method="post">
         <CardContent className="space-y-4">
+          <input type="hidden" name="_csrf" value={csrfToken} />
           {actionData?.error && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {actionData.error}

@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 vi.mock("drizzle-orm", () => ({
   eq: (col: unknown, val: unknown) => ({ op: "eq", col, val }),
   and: (...args: unknown[]) => ({ op: "and", args }),
+  inArray: (col: unknown, vals: unknown) => ({ op: "inArray", col, vals }),
 }));
 
 describe("config", () => {
@@ -14,7 +15,8 @@ describe("config", () => {
       where: vi.fn().mockReturnThis(),
       limit: vi.fn().mockResolvedValue([]),
       set: vi.fn().mockReturnThis(),
-      values: vi.fn().mockResolvedValue([]),
+      values: vi.fn().mockReturnThis(),
+      onConflictDoUpdate: vi.fn().mockResolvedValue([]),
     };
 
     return {
@@ -81,12 +83,10 @@ describe("config", () => {
     it("resolves in order, returning first match", async () => {
       const { getConfigCascade } = await import("../config");
       const db = createMockDb();
-      // First call (user scope) returns nothing, second (org) returns value
-      db._chain.limit
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          { scope: "org:1", key: "theme", value: "blue" },
-        ]);
+      // Single query returns all matching rows; cascade picks first scope match
+      db._chain.where.mockResolvedValue([
+        { scope: "org:1", key: "theme", value: "blue" },
+      ]);
 
       const result = await getConfigCascade(db as never, "theme", z.string(), [
         "user:123",
@@ -95,12 +95,13 @@ describe("config", () => {
       ]);
 
       expect(result).toBe("blue");
+      expect(db.select).toHaveBeenCalledTimes(1);
     });
 
     it("returns null when no scope has the config", async () => {
       const { getConfigCascade } = await import("../config");
       const db = createMockDb();
-      db._chain.limit.mockResolvedValue([]);
+      db._chain.where.mockResolvedValue([]);
 
       const result = await getConfigCascade(
         db as never,
@@ -114,24 +115,14 @@ describe("config", () => {
   });
 
   describe("setConfig()", () => {
-    it("inserts when no existing row", async () => {
+    it("uses upsert (single query)", async () => {
       const { setConfig } = await import("../config");
       const db = createMockDb();
-      db._chain.limit.mockResolvedValue([]);
 
       await setConfig(db as never, "global", "theme", "dark");
 
       expect(db.insert).toHaveBeenCalled();
-    });
-
-    it("updates when row exists", async () => {
-      const { setConfig } = await import("../config");
-      const db = createMockDb();
-      db._chain.limit.mockResolvedValue([{ id: 1 }]);
-
-      await setConfig(db as never, "global", "theme", "light");
-
-      expect(db.update).toHaveBeenCalled();
+      expect(db._chain.onConflictDoUpdate).toHaveBeenCalled();
     });
   });
 

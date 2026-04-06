@@ -4,6 +4,7 @@ import {
   Link,
   redirect,
   useActionData,
+  useLoaderData,
   useNavigation,
 } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -17,11 +18,24 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createRateLimiter, getRateLimitHeaders } from "~/lib/server";
+import {
+  createRateLimiter,
+  generateCsrfToken,
+  getRateLimitHeaders,
+  setCsrfCookie,
+  validateCsrf,
+} from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/signup";
 
 const signupLimiter = createRateLimiter({ windowMs: 60_000, max: 5 });
+
+export const loader = ({ request }: Route.LoaderArgs) => {
+  const csrfToken = generateCsrfToken();
+  const headers = new Headers();
+  setCsrfCookie(headers, csrfToken);
+  return data({ csrfToken }, { headers });
+};
 
 export async function action({ request }: Route.ActionArgs) {
   const limit = signupLimiter(request);
@@ -52,6 +66,22 @@ export async function action({ request }: Route.ActionArgs) {
 
   return redirect("/auth/verify-email", { headers });
 }
+
+export const ErrorBoundary = () => {
+  return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Something went wrong</CardTitle>
+        <CardDescription>An error occurred. Please try again.</CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <a href="/auth/signup" className="text-primary hover:underline">
+          Try again
+        </a>
+      </CardFooter>
+    </Card>
+  );
+};
 
 export default function Signup() {
   const actionData = useActionData<typeof action>();

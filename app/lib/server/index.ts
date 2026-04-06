@@ -11,6 +11,8 @@
 
 // JSONB config
 export { deleteConfig, getConfig, getConfigCascade, setConfig } from "./config";
+// CSRF protection
+export { generateCsrfToken, setCsrfCookie, validateCsrf } from "./csrf";
 // Event bus
 export {
   type AppEvents,

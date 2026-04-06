@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router";
+import { APP_NAME } from "~/lib/constants";
 
 export default function AuthLayout() {
   return (
@@ -6,7 +7,7 @@ export default function AuthLayout() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <Link to="/" className="text-2xl font-bold">
-            SaaS Starter
+            {APP_NAME}
           </Link>
         </div>
         <Outlet />

@@ -27,7 +27,7 @@
 ## Auth
 
 - Supabase handles auth (email/password, OAuth)
-- Server client: `getSupabaseServerClient(request, headers)` in loaders/actions
+- Server client: `createSupabaseServerClient(request)` in loaders/actions
 - Browser client: `getSupabaseBrowserClient()` in components
 - Session is cookie-based via `@supabase/ssr`
 - Protected routes check auth in loader → redirect to `/auth/login` if not authenticated

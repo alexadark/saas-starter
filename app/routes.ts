@@ -19,4 +19,5 @@ export default [
     ]),
   ]),
   route("dashboard", "routes/dashboard/_index.tsx"),
+  route("*", "routes/$.tsx"),
 ] satisfies RouteConfig;

@@ -3,13 +3,14 @@ import {
   parseCookieHeader,
   serializeCookieHeader,
 } from "@supabase/ssr";
+import { env } from "~/lib/env.server";
 
 export function createSupabaseServerClient(request: Request) {
   const headers = new Headers();
 
   const supabase = createServerClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!,
+    env.VITE_SUPABASE_URL,
+    env.SUPABASE_SECRET_KEY,
     {
       cookies: {
         getAll() {

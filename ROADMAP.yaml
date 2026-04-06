@@ -3,7 +3,7 @@ phases:
     title: Starter Template Hardening
     slug: starter-hardening
     description: Fix security issues, wire test automation hooks, update RIFF agents to run real tests
-    status: todo
+    status: done
     priority: P0
     mode: AFK
     depends_on: []

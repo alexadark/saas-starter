@@ -105,16 +105,24 @@ await supabase.auth.signOut();
 
 Sessions are cookie-based via `@supabase/ssr`. Protected routes check auth in the loader and redirect to `/auth/login`.
 
+## Environment Validation
+
+Server env vars are validated at startup via Zod (`app/lib/env.server.ts`). Missing or invalid vars crash the app immediately with a clear error - no silent failures in production.
+
+Add new server env vars to both `env.server.ts` and `.env.example`.
+
 ## Database
 
 Schema lives in [`app/lib/db/schema.ts`](app/lib/db/schema.ts). Drizzle connects to Supabase Postgres via `postgres.js`.
 
 ```ts
-import { db } from "~/lib/db/client";
+import { db } from "~/lib/db";
 import { users } from "~/lib/db/schema";
 
 const allUsers = await db.select().from(users);
 ```
+
+The database connection is **lazy** (Proxy pattern) - no connection is created at import time, making it safe during typecheck and tests. Configured for pgBouncer compatibility (`max: 1, prepare: false`).
 
 ## Server Utilities
 
@@ -305,26 +313,13 @@ npm run storybook     # Run Storybook
 - Test user behavior via `screen.getByRole()`, not `container.querySelector()`
 - Stories always include `Default` + `DarkMode` variants
 
-## Workflow
+## Security
 
-This project is designed to work with [Get Shit Done (GSD)](https://github.com/gsd-build/get-shit-done) — a spec-driven development system for Claude Code.
-
-```bash
-# Install GSD
-npx get-shit-done-cc@latest
-```
-
-Core commands:
-
-```
-/gsd:new-project     → Questions → research → requirements → roadmap
-/gsd:discuss-phase N → Shape implementation decisions before planning
-/gsd:plan-phase N    → Research → atomic task plans → verification
-/gsd:execute-phase N → Wave-based parallel execution with atomic commits
-/gsd:verify-work N   → Goal-backward verification of built work
-```
-
-See the [GSD documentation](https://github.com/gsd-build/get-shit-done) for the full command list.
+- Security headers configured in `vercel.json` (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
+- Environment variables validated at boot via Zod - crashes early on misconfiguration
+- Database connection is lazy and pgBouncer-compatible
+- Rate limiting on auth routes (login, signup, forgot-password)
+- 404 catch-all route prevents information leakage
 
 ## Customization Checklist
 
@@ -337,19 +332,17 @@ After cloning:
 - [ ] Run `npm run db:push` to apply the initial schema
 - [ ] Update design tokens in `app/styles/globals.css` (colors, fonts, radii)
 - [ ] Install project fonts (`@fontsource/*`) if desired
-- [ ] Install GSD: `npx get-shit-done-cc@latest`
-- [ ] Run `/gsd:new-project` to begin
+- [ ] Start building
 
 ## Environment Variables
 
 ```bash
 # .env (copy from .env.example)
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # server-only
-DATABASE_URL=postgres://...                       # direct connection string
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+SUPABASE_SECRET_KEY=your-secret-key               # server-only, never VITE_ prefix
+DATABASE_URL=postgres://...                        # transaction pooler, port 6543
 
 # Optional
 LOG_LEVEL=info     # debug | info | warn | error (default: info)
-NODE_ENV=          # set automatically by Vite / Vercel
 ```

@@ -27,10 +27,27 @@
 ## Auth
 
 - Supabase handles auth (email/password, OAuth)
-- Server client: `getSupabaseServerClient(request, headers)` in loaders/actions
+- Server client: `createSupabaseServerClient(request)` in loaders/actions
 - Browser client: `getSupabaseBrowserClient()` in components
 - Session is cookie-based via `@supabase/ssr`
 - Protected routes check auth in loader → redirect to `/auth/login` if not authenticated
+
+## Environment Validation
+
+Server environment variables are validated at startup via `app/lib/env.server.ts` (Zod schema). If any required var is missing, the app crashes immediately with a clear error message.
+
+```ts
+import { env } from "~/lib/env.server";
+// env.DATABASE_URL, env.SUPABASE_SECRET_KEY, etc. — validated, typed
+```
+
+When adding new server env vars, add them to both `env.server.ts` and `.env.example`.
+
+## Database
+
+- Lazy connection via Proxy pattern — no DB connection at import time (safe for typecheck/tests)
+- pgBouncer-compatible config: `{ max: 1, prepare: false }`
+- Uses validated `env.DATABASE_URL` instead of `process.env.DATABASE_URL!`
 
 ## Server Utilities
 
@@ -175,27 +192,12 @@ npm run db:push      # Push schema directly (no migration files)
 npm run db:studio    # Open Drizzle Studio
 ```
 
-## Workflow
+## Security
 
-This project is designed to work with [Get Shit Done (GSD)](https://github.com/gsd-build/get-shit-done) — a spec-driven development system for Claude Code.
-
-### Install GSD
-
-```bash
-npx get-shit-done-cc@latest
-```
-
-### Core Commands
-
-```
-/gsd:new-project     → Questions → research → requirements → roadmap
-/gsd:discuss-phase N → Shape implementation decisions before planning
-/gsd:plan-phase N    → Research → atomic task plans → verification
-/gsd:execute-phase N → Wave-based parallel execution with atomic commits
-/gsd:verify-work N   → Goal-backward verification of built work
-```
-
-See the [GSD documentation](https://github.com/gsd-build/get-shit-done) for the full command list and user guide.
+- Security headers configured in `vercel.json` (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
+- Environment variables validated at boot via Zod - crashes early on misconfiguration
+- Database connection is lazy and pgBouncer-compatible
+- 404 catch-all route prevents information leakage
 
 ## Customization Checklist
 
@@ -204,62 +206,7 @@ After cloning this template:
 - [ ] Update this CLAUDE.md (project name, overview, structure)
 - [ ] Update `package.json` name field
 - [ ] Create a Supabase project and fill `.env` from `.env.example`
+- [ ] Run `npm run db:push` to apply the initial schema
 - [ ] Update design tokens in `app/styles/globals.css` (colors, fonts, radii)
 - [ ] Install project-specific fonts (`@fontsource/*`)
-- [ ] Install GSD: `npx get-shit-done-cc@latest`
-- [ ] Run `/gsd:new-project` to begin
-
-## RIFF Framework
-
-This project uses the RIFF framework for structured development.
-
-### Commands
-
-- `/riff:start` - Discovery pipeline (questions → wireframes → roadmap → taste.md)
-- `/riff:next` - Pick next task → plan → execute → verify → commit
-- `/riff:loop [N]` - Run N phases autonomously (Ralph loop, AFK mode)
-- `/riff:status` - Where am I + what's next
-- `/riff:quick <task>` - Ad-hoc task, no phase overhead
-- `/riff:check` - Manual verification + security review
-- `/riff:debug <issue>` - Structured debugging
-
-### Execution Rules
-
-- Read taste.md before any code changes (Architecture section always, relevant section for the task)
-- Confidence gate before any execution (scope, target, output, risk)
-- Assumptions mode before any planning (Confident/Likely/Unclear)
-- Atomic commits per task (never git add .)
-- R1-R4 deviation rules during execution
-- Security review after every build phase
-
-### Git Workflow
-
-Each phase runs on its own branch with a PR:
-
-```
-main
-  └─ riff/phase-1-slug   → PR → squash merge → main
-  └─ riff/phase-2-slug   → PR → squash merge → main
-```
-
-- Branch created before planning: `riff/phase-N-slug`
-- Each task gets an atomic commit on the branch
-- PR created after verification + security review pass
-- Squash merge into main with branch cleanup
-- Failed phases keep their branch open for fix iterations
-
-### Wave Parallelization
-
-Tasks within a phase are grouped into waves by the planner:
-
-- Tasks in the same wave have **zero file overlap** and run in parallel (via Agent subagents)
-- Tasks in different waves run sequentially (Wave 2 depends on Wave 1)
-- The planner verifies no shared files in boundaries before grouping
-
-### Files
-
-- `PROJECT.md` - Product definition, wireframes, architecture
-- `ROADMAP.yaml` - Phases with status, priority, mode, dependencies
-- `STATE.md` - Current position and blockers
-- `CONTEXT.md` - Locked decisions
-- `taste.md` - Architectural rules (sectioned by concern)
+- [ ] Start building

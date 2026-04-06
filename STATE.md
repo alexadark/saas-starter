@@ -2,18 +2,25 @@
 
 ## Current Position
 
-- **Phase**: -
-- **Status**: Not started
-- **Last action**: Project initialized
+- **Phase**: Mapped
+- **Status**: Codebase explored, RIFF artifacts generated (2026-04-06)
+- **Last action**: /riff:map completed
 
 ## Active Decisions
 
-<!-- Decisions that affect the current phase -->
+- Architecture documented in `.planning/architecture.md`
+- Conventions extracted to `taste.md`
+- Risks catalogued in `.planning/risks.md`
 
 ## Blockers
 
-<!-- Anything preventing progress -->
+- No `.env` configured (cannot run locally)
+- Database schema not pushed to Supabase
+- No product definition yet (template only)
 
 ## Next Action
 
-Run `/riff:start` to begin the discovery pipeline.
+1. Review `taste.md` and `.planning/risks.md` - correct any misidentified conventions
+2. Configure Supabase credentials (`.env`)
+3. Define product features -> create ROADMAP.yaml
+4. Run `/riff:next` to start building

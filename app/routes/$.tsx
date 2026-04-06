@@ -1,3 +1,3 @@
 export const loader = () => {
-  throw new Response("Not Found", { status: 404 });
+	throw new Response("Not Found", { status: 404 });
 };

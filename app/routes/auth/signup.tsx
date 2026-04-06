@@ -46,8 +46,10 @@ export async function action({ request }: Route.ActionArgs) {
     });
   }
 
-  const { supabase, headers } = createSupabaseServerClient(request);
   const formData = await request.formData();
+  validateCsrf(request, formData);
+
+  const { supabase, headers } = createSupabaseServerClient(request);
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -84,6 +86,7 @@ export const ErrorBoundary = () => {
 };
 
 export default function Signup() {
+  const { csrfToken } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -98,6 +101,7 @@ export default function Signup() {
       </CardHeader>
       <Form method="post">
         <CardContent className="space-y-4">
+          <input type="hidden" name="_csrf" value={csrfToken} />
           {actionData?.error && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {actionData.error}

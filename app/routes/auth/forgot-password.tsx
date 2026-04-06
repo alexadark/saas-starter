@@ -1,4 +1,11 @@
-import { data, Form, Link, useActionData, useNavigation } from "react-router";
+import {
+  data,
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -10,11 +17,24 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createRateLimiter, getRateLimitHeaders } from "~/lib/server";
+import {
+  createRateLimiter,
+  generateCsrfToken,
+  getRateLimitHeaders,
+  setCsrfCookie,
+  validateCsrf,
+} from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/forgot-password";
 
 const forgotPasswordLimiter = createRateLimiter({ windowMs: 60_000, max: 5 });
+
+export const loader = ({ request }: Route.LoaderArgs) => {
+  const csrfToken = generateCsrfToken();
+  const headers = new Headers();
+  setCsrfCookie(headers, csrfToken);
+  return data({ csrfToken }, { headers });
+};
 
 export async function action({ request }: Route.ActionArgs) {
   const limit = forgotPasswordLimiter(request);
@@ -25,8 +45,10 @@ export async function action({ request }: Route.ActionArgs) {
     });
   }
 
-  const { supabase } = createSupabaseServerClient(request);
   const formData = await request.formData();
+  validateCsrf(request, formData);
+
+  const { supabase } = createSupabaseServerClient(request);
 
   const email = formData.get("email") as string;
   const url = new URL(request.url);
@@ -43,6 +65,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ForgotPassword() {
+  const { csrfToken } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -57,6 +80,7 @@ export default function ForgotPassword() {
       </CardHeader>
       <Form method="post">
         <CardContent className="space-y-4">
+          <input type="hidden" name="_csrf" value={csrfToken} />
           {actionData?.error && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {actionData.error}

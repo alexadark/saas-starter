@@ -3,6 +3,7 @@ import {
   Form,
   redirect,
   useActionData,
+  useLoaderData,
   useNavigation,
 } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -16,6 +17,7 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { generateCsrfToken, setCsrfCookie, validateCsrf } from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/reset-password";
 
@@ -29,12 +31,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/auth/forgot-password", { headers });
   }
 
-  return data(null, { headers });
+  const csrfToken = generateCsrfToken();
+  setCsrfCookie(headers, csrfToken);
+  return data({ csrfToken }, { headers });
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const { supabase, headers } = createSupabaseServerClient(request);
   const formData = await request.formData();
+  validateCsrf(request, formData);
+
+  const { supabase, headers } = createSupabaseServerClient(request);
 
   const password = formData.get("password") as string;
 
@@ -48,6 +54,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function ResetPassword() {
+  const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -60,6 +67,11 @@ export default function ResetPassword() {
       </CardHeader>
       <Form method="post">
         <CardContent className="space-y-4">
+          <input
+            type="hidden"
+            name="_csrf"
+            value={loaderData?.csrfToken ?? ""}
+          />
           {actionData?.error && (
             <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {actionData.error}

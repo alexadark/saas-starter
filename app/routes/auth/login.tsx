@@ -17,10 +17,21 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { createRateLimiter, getRateLimitHeaders } from "~/lib/server";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/login";
 
+const loginLimiter = createRateLimiter({ windowMs: 60_000, max: 10 });
+
 export async function action({ request }: Route.ActionArgs) {
+  const limit = loginLimiter(request);
+  if (!limit.allowed) {
+    return new Response("Too Many Requests", {
+      status: 429,
+      headers: getRateLimitHeaders(limit),
+    });
+  }
+
   const { supabase, headers } = createSupabaseServerClient(request);
   const formData = await request.formData();
 

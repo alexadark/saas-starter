@@ -19,6 +19,19 @@ import { Label } from "~/components/ui/label";
 import { createSupabaseServerClient } from "~/lib/supabase/server";
 import type { Route } from "./+types/reset-password";
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const { supabase, headers } = createSupabaseServerClient(request);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return redirect("/auth/forgot-password", { headers });
+  }
+
+  return data(null, { headers });
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const { supabase, headers } = createSupabaseServerClient(request);
   const formData = await request.formData();

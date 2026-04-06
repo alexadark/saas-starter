@@ -24,6 +24,8 @@ Before implementing any task that uses framework or library APIs:
 
 Do NOT rely on memory for API signatures, hook names, or config options. Verify against current docs. This prevents using deprecated patterns or mixing up frameworks (e.g., Next.js patterns in a React Router 7 project).
 
+**External API tasks:** If the task calls a third-party API, check for `/api-discovery` results first (Zod schemas, response dumps in the project). Use discovered schemas as the source of truth for request/response types - not the API docs alone. If no discovery exists and the response shape is uncertain, flag it before implementing.
+
 ## Assumptions Mode
 
 Before executing each task:

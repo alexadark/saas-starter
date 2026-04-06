@@ -25,17 +25,23 @@ Ask the user about their project. Start broad, go deep. Use AskUserQuestion for 
 - What problem does it solve?
 - Is this greenfield or brownfield?
 
-**Round 2 - Features:**
+**Round 2 - Features & User Stories:**
 
 - Core features (must-have for v1)
 - Nice-to-have features (v2+)
 - What this project explicitly does NOT do (scope boundaries)
-- For each feature: push the user to think of edge cases and user flows
+- For each core feature: push the user to think of edge cases and user flows
+- For each core feature: write 1-3 user stories in the format: "As a [persona], I want to [action] so that [outcome]"
+  - Focus on behavior, not implementation
+  - Include the primary happy path + key edge cases (error states, empty states, permissions)
+  - These user stories become acceptance criteria seeds for the planner
 
 **Round 3 - Technical:**
 
 - Stack preferences (or let Claude decide based on requirements)
 - External integrations (APIs, payment, auth providers)
+  - For each external API: note it for `/api-discovery` before the relevant phase begins
+  - Record API endpoints, auth method, and expected data in PROJECT.md
 - Deployment target
 - Performance/scale expectations
 

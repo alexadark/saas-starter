@@ -41,6 +41,16 @@ Before planning any phase that touches framework or library APIs, verify the cur
 
 This is mandatory even for well-known frameworks. Training data may not reflect recent API changes, removed features, or new patterns. A plan built on stale knowledge produces R3 deviations during execution.
 
+### API Discovery Check
+
+If the phase involves calling an **external API** (third-party service, payment provider, CMS, etc.):
+
+1. Recommend the user run `/api-discovery` before planning begins
+2. If API discovery results already exist (Zod schemas, response dumps), read them and use them as the source of truth for request/response shapes
+3. If no discovery has been done and the phase is AFK: flag as a blocker - never plan against undiscovered API responses
+
+Why: API docs lie. Real responses diverge from documentation (extra fields, different types, missing properties). Planning against docs alone produces R1/R2 deviations at best, R3 at worst. `/api-discovery` makes real calls and generates Zod schemas from actual data.
+
 ## How You Plan: Goal-Backward
 
 Do NOT start with "what tasks should we do." Start with:

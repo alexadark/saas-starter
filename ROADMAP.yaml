@@ -12,7 +12,7 @@ phases:
     title: Starter Audit Fixes
     slug: audit-fixes
     description: Fix all 15 findings from post-phase-0 audit - env validation, CSRF, server-side validation, error boundaries, 404 route, dashboard headers, config upsert, lazy DB, brand constant, CLAUDE.md docs, Playwright config, component stories/tests
-    status: todo
+    status: done
     priority: P0
     mode: AFK
     depends_on: [0]

@@ -7,17 +7,17 @@ const CSRF_FIELD = "_csrf";
  * Generate a random 32-byte hex CSRF token.
  */
 export const generateCsrfToken = (): string => {
-	return randomBytes(32).toString("hex");
+  return randomBytes(32).toString("hex");
 };
 
 /**
  * Append an HttpOnly, SameSite=Strict, Secure CSRF cookie to the response headers.
  */
 export const setCsrfCookie = (headers: Headers, token: string): void => {
-	headers.append(
-		"Set-Cookie",
-		`${CSRF_COOKIE}=${token}; HttpOnly; SameSite=Strict; Secure; Path=/`,
-	);
+  headers.append(
+    "Set-Cookie",
+    `${CSRF_COOKIE}=${token}; HttpOnly; SameSite=Strict; Secure; Path=/`,
+  );
 };
 
 /**
@@ -25,18 +25,18 @@ export const setCsrfCookie = (headers: Headers, token: string): void => {
  * Throws a 403 Response on mismatch or missing token.
  */
 export const validateCsrf = (request: Request, formData: FormData): void => {
-	const cookieHeader = request.headers.get("Cookie") ?? "";
-	const cookies = Object.fromEntries(
-		cookieHeader.split(";").map((c) => {
-			const [key, ...rest] = c.trim().split("=");
-			return [key, rest.join("=")];
-		}),
-	);
+  const cookieHeader = request.headers.get("Cookie") ?? "";
+  const cookies = Object.fromEntries(
+    cookieHeader.split(";").map((c) => {
+      const [key, ...rest] = c.trim().split("=");
+      return [key, rest.join("=")];
+    }),
+  );
 
-	const cookieToken = cookies[CSRF_COOKIE];
-	const formToken = formData.get(CSRF_FIELD);
+  const cookieToken = cookies[CSRF_COOKIE];
+  const formToken = formData.get(CSRF_FIELD);
 
-	if (!cookieToken || !formToken || cookieToken !== formToken) {
-		throw new Response("Forbidden", { status: 403 });
-	}
+  if (!cookieToken || !formToken || cookieToken !== formToken) {
+    throw new Response("Forbidden", { status: 403 });
+  }
 };

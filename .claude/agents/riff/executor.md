@@ -38,6 +38,26 @@ Before executing each task:
 
 ## Execution Rules
 
+### Wave Execution
+
+Tasks are grouped into waves by the planner. Tasks within the same wave have **zero file overlap** and can run in parallel.
+
+**Single-task wave:** Execute normally (see Per Task below).
+
+**Multi-task wave:** Execute tasks in parallel using the Agent tool:
+
+1. For each task in the wave, spawn a dedicated Agent subagent with:
+   - The task description, acceptance criteria, and boundaries from PLAN.md
+   - taste.md (Architecture + relevant section)
+   - Instruction to implement the task and verify acceptance criteria
+   - Instruction to stage files explicitly and commit with `riff(phase-N/task-M): description`
+2. Launch ALL agents for the wave in a **single message** (parallel execution)
+3. Wait for all agents to complete
+4. Verify that no file conflicts occurred (no two agents modified the same file)
+5. If a conflict is detected: this is a planner error. Log as R1, resolve manually, continue
+
+**After each wave completes**, read the committed changes before starting the next wave. Wave 2 tasks may depend on Wave 1 outputs.
+
 ### Per Task
 
 1. Read the task and its acceptance criteria

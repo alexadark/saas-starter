@@ -68,10 +68,24 @@ Each plan targets ~50% of the executor's context budget. That means:
 
 ### Wave Grouping
 
-Tasks that can run in parallel go in the same wave. Tasks with dependencies go in separate waves. Explicitly state:
+Tasks in the same wave run in **parallel via separate agents**. This means they MUST have **zero file overlap** - not just in their primary files, but in their entire boundary list. If two tasks could touch the same file (even a barrel export or config), they go in separate waves.
 
-- Wave 1: tasks A, B (parallel - no shared files)
-- Wave 2: task C (depends on A and B)
+Explicitly state waves in the plan:
+
+```
+## Waves
+
+- Wave 1: Task 1, Task 2 (parallel - zero shared files confirmed)
+- Wave 2: Task 3 (depends on Task 1 and Task 2)
+```
+
+**Shared file check:** Before finalizing waves, verify that no two tasks in the same wave list the same file in their boundaries. Common conflicts to watch for:
+
+- Barrel exports (`index.ts`) - if both tasks add exports, separate waves
+- Schema files (`schema.ts`) - if both tasks add tables, separate waves
+- Config files (`package.json`, route manifests) - if both tasks add entries, separate waves
+
+**When in doubt, use separate waves.** Sequential is always safe; parallel requires certainty.
 
 ## Automatic Checks (included in EVERY plan)
 

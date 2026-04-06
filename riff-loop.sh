@@ -152,33 +152,40 @@ You are running in RIFF loop (AFK mode). Execute /riff:next with these constrain
 - On verification FAIL: write "LOOP_STOP: verification failed" to STATE.md and exit
 - On security CRITICAL/HIGH: write "LOOP_STOP: security issue" to STATE.md and exit
 - After successful completion: exit normally
-- Do NOT run git add or git commit. The loop script handles commits deterministically.
+- Branch workflow: create branch riff/phase-N-slug, commit per task, create PR, squash merge, return to main
+- Auto-merge PRs without waiting for review (AFK mode)
 RIFF_PROMPT
 
   # Execute with Claude Code CLI
+  # The agent handles: branch creation, task commits, PR creation, merge, return to main
   if claude -p "$(cat "$PROMPT_FILE")" --allowedTools "Bash,Read,Write,Edit,Glob,Grep,Agent" 2>&1; then
     echo -e "${GREEN}Iteration $ITERATION: agent finished.${NC}"
   else
     notify "Iteration $ITERATION failed with error. Stopping loop." "error"
     rm -f "$PROMPT_FILE"
+    # Ensure we're back on main even if the agent failed mid-branch
+    MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+    git checkout "$MAIN_BRANCH" 2>/dev/null || true
     break
   fi
 
   rm -f "$PROMPT_FILE"
 
-  # Deterministic commit - the loop does the commit, not the agent
-  # This ensures every iteration ends in a committed state
-  if [ -n "$(git status --porcelain)" ]; then
-    # Get current phase info for commit message
-    CURRENT_PHASE=$(grep -B1 'status: in-progress' ROADMAP.yaml 2>/dev/null | grep 'slug:' | sed 's/.*slug: "//' | sed 's/"//' || echo "unknown")
-    # Stage all tracked changes + new files, but not deletions outside the project
-    git add --all -- . ':!.env*' ':!*.secret*'
-    git commit -m "riff(phase-${CURRENT_PHASE}/loop-${ITERATION}): automated build iteration
+  # Ensure we're back on main after the agent's PR merge
+  # The agent should have done this, but we verify as a safety net
+  MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+  CURRENT_BRANCH=$(git branch --show-current)
+  if [ "$CURRENT_BRANCH" != "$MAIN_BRANCH" ]; then
+    echo -e "${YELLOW}Warning: agent left us on branch '$CURRENT_BRANCH'. Returning to $MAIN_BRANCH.${NC}"
+    # If there are uncommitted changes, commit them before switching
+    if [ -n "$(git status --porcelain)" ]; then
+      git add --all -- . ':!.env*' ':!*.secret*'
+      git commit -m "riff(loop-${ITERATION}): uncommitted changes from branch $CURRENT_BRANCH
 
 Co-Authored-By: RIFF Loop <riff@automated>" || true
-    echo -e "${GREEN}Iteration $ITERATION: committed.${NC}"
-  else
-    echo -e "${YELLOW}Iteration $ITERATION: no changes to commit.${NC}"
+    fi
+    git checkout "$MAIN_BRANCH"
+    git pull origin "$MAIN_BRANCH" 2>/dev/null || true
   fi
 
   # Check if the loop should stop

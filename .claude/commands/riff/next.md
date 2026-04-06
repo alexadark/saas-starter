@@ -43,6 +43,7 @@ If the last phase's VERIFICATION.md has `FAIL`:
 - Don't pick a new phase
 - Instead, create a fix plan based on the verification failures
 - Update the failed phase's status to `in-progress`
+- Check out the existing branch: `git checkout riff/phase-N-slug` (it was not merged)
 
 **Seed trigger check:** Before picking, scan `.planning/seeds/`. For each seed, read its `trigger:` field and evaluate against current state (phase count, stack changes, ROADMAP status). If a trigger is met:
 
@@ -50,6 +51,20 @@ If the last phase's VERIFICATION.md has `FAIL`:
 - If yes: add as a new phase in ROADMAP.yaml, archive the seed
 - If no: skip, leave the seed for later
 - In AFK mode: log the triggered seed in STATE.md but don't promote (human decides)
+
+### Step 2b: Create Phase Branch
+
+Before planning, create a dedicated branch for this phase:
+
+```bash
+git checkout -b riff/phase-N-slug
+```
+
+Branch naming: `riff/phase-{id}-{slug}` (e.g., `riff/phase-2-billing`).
+
+This gives each phase a clean git history and enables PR-based review/rollback.
+
+**Important:** All subsequent work (planning, execution, verification) happens on this branch.
 
 ### Step 3: Confidence Gate
 
@@ -127,6 +142,40 @@ Spawn the security-reviewer agent to scan the changes made in this phase:
 - Auth check on any new routes
 
 If CRITICAL or HIGH findings: mark phase as `blocked` and report.
+
+### Step 7b: Create PR and Merge
+
+After security review passes, create a pull request and merge:
+
+1. **Push the branch:**
+
+   ```bash
+   git push -u origin riff/phase-N-slug
+   ```
+
+2. **Create a PR:**
+
+   ```bash
+   gh pr create --title "riff(phase-N): PHASE_TITLE" --body "## Phase N: PHASE_TITLE\n\n### Built\n- artifacts from SUMMARY.md\n\n### Verification\n- PASS/FAIL from VERIFICATION.md\n\n### Security\n- PASS/issues from security review"
+   ```
+
+3. **Merge the PR:**
+
+   ```bash
+   gh pr merge --squash --delete-branch
+   ```
+
+4. **Return to main:**
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+If verification or security FAILED: do NOT create the PR. Leave the branch open for fix iterations. The next `/riff:next` call will pick up the failed phase and continue on the same branch.
+
+**In AFK mode (Ralph loop):** PR creation, merge, and branch cleanup are automatic. No human review required for AFK phases.
+
+**In interactive mode:** Create the PR but wait for human confirmation before merging (unless the human has pre-approved auto-merge).
 
 ### Step 8: Update State
 

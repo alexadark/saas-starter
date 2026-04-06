@@ -2,18 +2,17 @@
 
 ## Current Position
 
-- **Phase**: 0 - Starter Template Hardening
-- **Status**: Done (pending verification)
-- **Last action**: All 14 tasks executed, 50 tests passing
+- **Phase**: 1 - Starter Audit Fixes
+- **Status**: Planned, ready for execution
+- **Last action**: PLAN.md written for phase 1 (15 findings, 4 waves, 14 tasks)
 
 ## Active Decisions
 
 - taste.md uses SignalFinder 2 reference (14 rules + hexagonal arch)
-- Testing strategy: Epic Stack / Kent C. Dodds Testing Trophy (updated in taste.md)
-- Full test automation: per-edit (test-gate.sh), per-commit (security-scan.sh), per-phase (verifier Level 4-5)
+- Testing strategy: Epic Stack / Kent C. Dodds Testing Trophy
+- Full test automation: per-edit, per-commit, per-phase
 - Only db:push remains manual (destructive)
-- IP extraction: x-real-ip > last x-forwarded-for > "unknown"
-- Rate limits: login=10/min, signup=5/min, forgot-password=5/min
+- Server Supabase client will switch to SUPABASE_SECRET_KEY (phase 1 task 1.1)
 
 ## Blockers
 
@@ -23,4 +22,4 @@
 
 ## Next Action
 
-Run verification for phase 0, then proceed to next phase.
+Run `/riff:next` in a fresh session to execute phase 1.

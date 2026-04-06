@@ -1,6 +1,6 @@
 # Architectural Taste - Code Quality Rules
 
-> Reference: SignalFinder 2 taste.md. Adapted for this starter stack: React Router 7 + Drizzle + Supabase + shadcn/ui.
+> Reference: SignalFinder 2 taste.md. Stack: React Router 7 + Drizzle + Supabase + shadcn/ui + Hexagonal Architecture (when providers are needed).
 > Sources: Epic Stack (Kent Dodds), Forge 42 Base Stack, Philosophy of Software Design (Ousterhout), Pragmatic Programmer, Extreme Programming (Kent Beck), Matt Pocock's repos.
 
 ## 14 Rules
@@ -9,7 +9,7 @@
 
 2. **Deep modules** - A module's interface must be simpler than its implementation. If the function signature is nearly as complex as the body, the abstraction is wrong. A service with 3 public methods hiding 500 lines of logic is better than 20 tiny exported helpers. (Ousterhout)
 
-3. **Source of truth** - Types in `app/lib/db/schema.ts` (Drizzle = single schema source). No ad-hoc inline types for things that already have a definition.
+3. **Source of truth** - Types in `app/lib/db/schema.ts` (Drizzle = single schema source). Provider interfaces in `app/server/providers/types.ts` when hexagonal arch is used. No ad-hoc inline types for things that already have a definition.
 
 4. **YAGNI** - Specify what you DON'T want. No generic "extensibility" unless the PRD asks for it. No abstraction for a single use case. Three similar lines are better than a premature helper. (Beck)
 
@@ -31,7 +31,7 @@
 
 13. **Four rules of simple design** - Code must: (1) pass all tests, (2) reveal intention, (3) have zero duplication, (4) have minimum elements. Use as acceptance criteria for agent-generated code. (Beck)
 
-14. **Design It Twice for critical interfaces** - Before implementing a new service interface or public API, produce 2-3 competing designs with different trade-offs. Never go with the first design for interfaces that will be hard to change. (Ousterhout)
+14. **Design It Twice for critical interfaces** - Before implementing a new port, adapter interface, or public API, produce 2-3 competing designs with different trade-offs. Never go with the first design for interfaces that will be hard to change. (Ousterhout)
 
 ## Formatting
 
@@ -151,9 +151,11 @@ After every agent-generated code, check:
 - [ ] Are modules deep? (simple interface, rich implementation)
 - [ ] Any information leaks? (internal details exposed in exports)
 - [ ] Any change amplification? (one change requires touching too many files)
+- [ ] Does it follow hexagonal arch? (providers don't leak into services, services don't leak into routes)
 - [ ] Do I understand why each line exists? (no "programming by coincidence")
 - [ ] Is there YAGNI code to remove?
 - [ ] Tests exist and pass?
+- [ ] Provider-agnostic? (no provider name in schema or service layer)
 - [ ] Can any errors be eliminated by design? (branded types, narrower interfaces)
 - [ ] Are barrel exports curated (not `export *`)?
 - [ ] Would a new developer (or agent) understand the module boundary from `index.ts` alone?

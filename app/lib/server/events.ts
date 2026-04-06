@@ -38,51 +38,54 @@ const handlers = new Map<string, Set<AnyEventHandler>>();
  * Returns an unsubscribe function.
  */
 export const on = <K extends string & keyof AppEvents>(
-	event: K,
-	handler: EventHandler<AppEvents[K]>,
+  event: K,
+  handler: EventHandler<AppEvents[K]>,
 ): (() => void) => {
-	if (!handlers.has(event)) {
-		handlers.set(event, new Set());
-	}
+  if (!handlers.has(event)) {
+    handlers.set(event, new Set());
+  }
 
-	const set = handlers.get(event) as Set<AnyEventHandler>;
-	set.add(handler as AnyEventHandler);
+  const set = handlers.get(event) as Set<AnyEventHandler>;
+  set.add(handler as AnyEventHandler);
 
-	return () => {
-		set.delete(handler as AnyEventHandler);
-		if (set.size === 0) {
-			handlers.delete(event);
-		}
-	};
+  return () => {
+    set.delete(handler as AnyEventHandler);
+    if (set.size === 0) {
+      handlers.delete(event);
+    }
+  };
 };
 
 /**
  * Fire-and-forget event emission.
  * Each handler runs inside its own try/catch via queueMicrotask.
  */
-export const emit = <K extends string & keyof AppEvents>(event: K, payload: AppEvents[K]): void => {
-	const set = handlers.get(event);
-	if (!set) return;
+export const emit = <K extends string & keyof AppEvents>(
+  event: K,
+  payload: AppEvents[K],
+): void => {
+  const set = handlers.get(event);
+  if (!set) return;
 
-	for (const handler of set) {
-		const captured = handler;
-		queueMicrotask(() => {
-			try {
-				captured(payload as unknown);
-			} catch (err) {
-				console.error(`[events] Handler error for "${event}":`, err);
-			}
-		});
-	}
+  for (const handler of set) {
+    const captured = handler;
+    queueMicrotask(() => {
+      try {
+        captured(payload as unknown);
+      } catch (err) {
+        console.error(`[events] Handler error for "${event}":`, err);
+      }
+    });
+  }
 };
 
 /**
  * Remove all handlers for a specific event, or all events if no key is given.
  */
 export const removeAllListeners = (event?: string & keyof AppEvents): void => {
-	if (event !== undefined) {
-		handlers.delete(event);
-	} else {
-		handlers.clear();
-	}
+  if (event !== undefined) {
+    handlers.delete(event);
+  } else {
+    handlers.clear();
+  }
 };

@@ -7,28 +7,30 @@ import type { z } from "zod/v4";
  * - Values that look like JSON (start with `{`, `[`, `"`, or are `true`/`false`/`null`/numeric)
  *   are parsed via JSON.parse. If parsing fails, the raw string is kept.
  */
-export const formDataToObject = (formData: FormData): Record<string, unknown> => {
-	const result: Record<string, unknown> = {};
+export const formDataToObject = (
+  formData: FormData,
+): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
 
-	for (const key of formData.keys()) {
-		const values = formData.getAll(key);
-		const parsed = values.map(tryParseJson);
-		result[key] = parsed.length === 1 ? parsed[0] : parsed;
-	}
+  for (const key of formData.keys()) {
+    const values = formData.getAll(key);
+    const parsed = values.map(tryParseJson);
+    result[key] = parsed.length === 1 ? parsed[0] : parsed;
+  }
 
-	return result;
+  return result;
 };
 
 const JSON_LIKE = /^(\{|\[|"|true$|false$|null$|-?\d)/;
 
 const tryParseJson = (value: FormDataEntryValue): unknown => {
-	if (typeof value !== "string") return value;
-	if (!JSON_LIKE.test(value)) return value;
-	try {
-		return JSON.parse(value);
-	} catch {
-		return value;
-	}
+  if (typeof value !== "string") return value;
+  if (!JSON_LIKE.test(value)) return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 };
 
 type ParseSuccess<T> = { success: true; data: T };
@@ -43,26 +45,26 @@ type ParseResult<T> = ParseSuccess<T> | ParseFailure;
  * `{ success: false, errors }` with field-level error arrays on failure.
  */
 export const parseFormData = async <T>(
-	request: Request,
-	schema: z.ZodType<T>,
+  request: Request,
+  schema: z.ZodType<T>,
 ): Promise<ParseResult<T>> => {
-	const formData = await request.formData();
-	const raw = formDataToObject(formData);
+  const formData = await request.formData();
+  const raw = formDataToObject(formData);
 
-	const result = schema.safeParse(raw);
+  const result = schema.safeParse(raw);
 
-	if (result.success) {
-		return { success: true, data: result.data };
-	}
+  if (result.success) {
+    return { success: true, data: result.data };
+  }
 
-	const errors: Record<string, string[]> = {};
-	for (const issue of result.error.issues) {
-		const field = issue.path.join(".") || "_form";
-		if (!errors[field]) {
-			errors[field] = [];
-		}
-		errors[field].push(issue.message);
-	}
+  const errors: Record<string, string[]> = {};
+  for (const issue of result.error.issues) {
+    const field = issue.path.join(".") || "_form";
+    if (!errors[field]) {
+      errors[field] = [];
+    }
+    errors[field].push(issue.message);
+  }
 
-	return { success: false, errors };
+  return { success: false, errors };
 };

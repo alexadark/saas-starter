@@ -81,7 +81,11 @@ notify() {
 
 # Display banner
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-bash "$SCRIPT_DIR/templates/banner.sh"
+if [ -f ".claude/hooks/riff/banner.sh" ]; then
+  bash .claude/hooks/riff/banner.sh
+elif [ -f "$SCRIPT_DIR/templates/banner.sh" ]; then
+  bash "$SCRIPT_DIR/templates/banner.sh"
+fi
 
 # Check prerequisites
 cd "$PROJECT_PATH"

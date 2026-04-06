@@ -217,6 +217,7 @@ This project uses the RIFF framework for structured development.
 
 - `/riff:start` - Discovery pipeline (questions → wireframes → roadmap → taste.md)
 - `/riff:next` - Pick next task → plan → execute → verify → commit
+- `/riff:loop [N]` - Run N phases autonomously (Ralph loop, AFK mode)
 - `/riff:status` - Where am I + what's next
 - `/riff:quick <task>` - Ad-hoc task, no phase overhead
 - `/riff:check` - Manual verification + security review

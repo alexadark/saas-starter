@@ -4,6 +4,8 @@ Production-ready SaaS template: React Router 7 + Supabase Auth + Drizzle ORM + T
 
 Built for solo developers and small teams who want a solid foundation without the ceremony.
 
+> Tooling config (CI, biome, vitest, drizzle, playwright, tsconfig) comes from RIFF templates. Run `./scripts/sync-from-riff.sh` after clone.
+
 ## Stack
 
 | Layer      | Technology                                                                |
